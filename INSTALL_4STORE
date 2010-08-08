@@ -1,0 +1,87 @@
+#	Copyright (c) 2010 Bourdercloud.com
+#
+#   The lib Bordercloud/4store-php use the branch delete (March 26, 2010) of project 4store 
+#	(http://github.com/garlik/4store)
+#
+#	This document is a draft, if you have remarks, questions, 
+#	or suggestions, please send them to karima.rafes@bordercloud.com. 
+#
+#	INSTALL 4STORE ####################################################
+#	Command lines :
+yum install gcc glib2-devel libxml2-devel pcre-devel avahi avahi-devel avahi-glib-devel readline-devel ncurses-devel termcap libtermcap-devel expat-devel zlib-devel
+
+#for fedora, put this line "-A INPUT -m state --state NEW -m udp -p udp --dport 5353 -d 224.0.0.251 -j ACCEPT" in /etc/sysconfig/iptables
+# reload iptables (or reboot...)
+
+# Prepare build of 4store :
+cd ~
+mkdir 4store
+cd ~/4store
+
+export LD_LIBRARY_PATH=/usr/local/lib
+export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+
+wget http://download.librdf.org/source/raptor-1.4.21.tar.gz
+tar xvzf raptor-1.4.21.tar.gz
+cd raptor-1.4.21
+./autogen.sh
+./configure
+make
+make check
+make install
+
+cd ..
+wget http://download.librdf.org/source/rasqal-0.9.19.tar.gz 
+tar xvzf rasqal-0.9.19.tar.gz 
+cd rasqal-0.9.19
+./autogen.sh --with-raptor=system
+./configure  '--enable-query-languages=sparql rdql laqrs'
+make  
+make check 
+make install 
+
+#import 4store
+cd ..
+#Branch delete
+git clone -b delete  http://github.com/garlik/4store.git
+cd 4store
+
+# Problem With Fedora13
+#vim src/frontend/Makefile
+# Replace in the file
+##4s-size: size.o ../common/lib4store.a
+##        $(CC) $(LDFLAGS) -o 4s-size $^ -lm $(LIBS)
+
+export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib64/pkgconfig:/usr/share/pkgconfig:/usr/local/lib64/pkgconfig
+make
+make install 
+
+# TEST 4STORE ####################################################
+#	Command lines :
+4s-backend-setup test
+4s-backend test
+4s-httpd -D test
+
+# you can test your endpoint :  http://localhost:8080/
+# It's OK ?  Great ;) ... the worst is behind you ! 
+# NO ? find the response in the forum 4Store: http://groups.google.com/group/4store-support
+
+# STOP 4STORE ######################################################
+#stop all
+killall 4s-backend
+killall 4s-http
+
+# RESTART 4STORE ####################################################
+4s-backend test
+4s-httpd -D test
+
+# CLEAN KB test (for example) ########################################
+4s-backend-destroy test
+
+# TESTS with the lib 4STORE-PHP #######################################
+#	Command lines :
+cd yourfolder/4store-php
+make test
+
+NB : if "make test" blocked, to do a crtl^C and to do "make clean".
+

@@ -1,5 +1,75 @@
-4store-php by Yves Raimond
+== About ==
 
-A small PHP library to interact with a Garlik's 4Store instance over HTTP
+Lib Sparql HTTP Client for 4Store around the native php lib.
+This version is building for basic http server without zend. 
+This is a fork of the version 4store-php by 
+Yves Raimond with Zend (http://github.com/moustaki/4store-php.git).
 
-See examples in the examples/ directory
+== Contact ==
+
+If you have remarks, questions, or suggestions, please send them to
+karima.rafes@bordercloud.com. 
+
+== Sources ==
+git clone http://github.com/BorderCloud/4store-php.git
+
+== Release-Notes ==
+
+* V0.1.0.0 version 4store-php by Karima Rafes <karima.rafes@bordercloud.com>
+	- Communication with the functions cURL of PHP only.
+	- Parse query and response with lib ARC (arc.semsol.org)
+	- Function Query for 4Store in FourStore_StorePlus compatible with SELECT, ASK, INSERT DATA and DELETE DATA.	
+	- insert 22 tests PHPUnit with a Makefile (make test and make clean)
+
+* precedent version 4store-php by Yves Raimond with Zend (http://github.com/moustaki/4store-php.git)
+
+== license ==
+
+ Copyright (c) 2010 Bourdercloud.com
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ 
+ == Install 4Store ==
+ 
+see file INSTALL_4STORE
+ 
+== Install Test ==
+
+ You can execute test with PHPUnit 3.4.14, 
+ Command line, for example :
+ #For Fedora 13 :
+ yum install php-phpunit
+ 
+== Tutorial ==
+
+You can read the examples in the folder "examples".
+and execute : 
+php 4_query.php
+ 
+NB : clean4store.php and init4store.php is only there to help you. Don't use it in production !
+
+== Test the classes ==
+
+The MakeFile can clean your system (kill process 4store and destroy the kb test)
+and it can test.
+So, command line :
+make test
+
+NB : if "make test" blocked, to do a crtl^C and "make clean"
+
