@@ -14,28 +14,29 @@ yum install gcc glib2-devel libxml2-devel pcre-devel avahi avahi-devel avahi-gli
 # reload iptables (or reboot...)
 
 # Prepare build of 4store :
-cd ~
-mkdir 4store
-cd ~/4store
+mkdir 4s
+cd 4s
 
-export LD_LIBRARY_PATH=/usr/local/lib
-export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+# for raptor, rasqual and 4store
+export PKG_CONFIG_PATH=/usr/lib64/pkgconfig
 
+# install a 64-bit raptor from freshly extracted source
 wget http://download.librdf.org/source/raptor-1.4.21.tar.gz
 tar xvzf raptor-1.4.21.tar.gz
 cd raptor-1.4.21
 ./autogen.sh
-./configure
+./configure --libdir=/usr/lib64
 make
-make check
+#make check
 make install
 
+# similarly for 64-bit rasqal
 cd ..
 wget http://download.librdf.org/source/rasqal-0.9.19.tar.gz 
 tar xvzf rasqal-0.9.19.tar.gz 
 cd rasqal-0.9.19
-./autogen.sh --with-raptor=system
-./configure  '--enable-query-languages=sparql rdql laqrs'
+./autogen.sh 
+./configure  '--enable-query-languages=sparql rdql laqrs'  --libdir=/usr/lib64 
 make  
 make check 
 make install 
@@ -52,7 +53,6 @@ cd 4store
 ##4s-size: size.o ../common/lib4store.a
 ##        $(CC) $(LDFLAGS) -o 4s-size $^ -lm $(LIBS)
 
-export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib64/pkgconfig:/usr/share/pkgconfig:/usr/local/lib64/pkgconfig
 make
 make install 
 
@@ -65,6 +65,9 @@ make install
 # you can test your endpoint :  http://localhost:8080/
 # It's OK ?  Great ;) ... the worst is behind you ! 
 # NO ? find the response in the forum 4Store: http://groups.google.com/group/4store-support
+
+# Last test
+4s-update test 'PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX a: <http://example.com/test/a/> PREFIX b: <http://example.com/test/b/> PREFIX ex: <http://example.com/> INSERT DATA { GRAPH ex:test { a:A b:Name "Test2" .}}'
 
 # STOP 4STORE ######################################################
 #stop all
