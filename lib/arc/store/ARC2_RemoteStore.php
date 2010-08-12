@@ -61,7 +61,7 @@ class ARC2_RemoteStore extends ARC2_Class {
   function query($q, $result_format = '', $src = '', $keep_bnode_ids = 0, $log_query = 0) {
     if ($log_query) $this->logQuery($q);
     ARC2::inc('SPARQLPlusParser');
-    $p = & new ARC2_SPARQLPlusParser($this->a, $this);
+    $p = new ARC2_SPARQLPlusParser($this->a, $this);
     $p->parse($q, $src);
     $infos = $p->getQueryInfos();
     $t1 = ARC2::mtime();
@@ -103,7 +103,7 @@ class ARC2_RemoteStore extends ARC2_Class {
     $mthd = in_array($qt, array('load', 'insert', 'delete')) ? 'POST' : 'GET';
     /* reader */
     ARC2::inc('Reader');
-    $reader =& new ARC2_Reader($this->a, $this);
+    $reader = new ARC2_Reader($this->a, $this);
     $reader->setAcceptHeader('Accept: application/sparql-results+xml; q=0.9, application/rdf+xml; q=0.9, */*; q=0.1');
     if ($mthd == 'GET') {
       $url = $ep;
