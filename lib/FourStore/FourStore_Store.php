@@ -115,7 +115,7 @@ class FourStore_Store {
 	 * @access public
 	 */
 	public function add($graph, $turtle) {
-		$post_endpoint = array_shift(split("/sparql/", $this->_endpoint)) . "/data/";
+		$post_endpoint = array_shift(explode("/sparql/", $this->_endpoint)) . "/data/";
 
 		$data = array( "graph" => $graph, "data" => $turtle , "mime-type" => 'application/x-turtle' );
 		$sUri    = $post_endpoint;
@@ -253,7 +253,7 @@ class FourStore_Store {
 	 * @access public
 	 */
 	public function queryUpdate($query) {
-		$post_endpoint = array_shift(split("/sparql/", $this->_endpoint)) . "/update/";
+		$post_endpoint = array_shift(explode("/sparql/", $this->_endpoint)) . "/update/";
 
 		$sUri    = $post_endpoint;
 		$data =array("update" =>    $query) ;
