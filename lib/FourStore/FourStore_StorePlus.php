@@ -110,10 +110,10 @@ class FourStore_StorePlus {
 		if($this->_debug){
 			print date('Y-m-d\TH:i:s\Z', time()) . ' : ' . $q . '' . "\n\n";
 		}
-		$p =  & new FourStore_SPARQLParser($this->_arc2_RemoteStore->a, $this->_arc2_RemoteStore);
+		$p = new FourStore_SPARQLParser('', $this);
 		$p->parse($q);
 		$infos = $p->getQueryInfos();
-		$t1 = ARC2::mtime();
+		$t1 = ARC2::mtime();		
 		if (!$errs = $p->getErrors()) {
 			$qt = $infos['query']['type'];
 			$r = array('query_type' => $qt, 'result' => $this->runQuery($q, $qt, $infos));
@@ -124,6 +124,7 @@ class FourStore_StorePlus {
 				print date('Y-m-d\TH:i:s\Z', time()) . ' : ERROR ' . $q . '' . "\n\n";
 				print_r($errs);
 			}
+			return $this->_arc2_RemoteStore->addError($p->getErrors() );
 		}
 		$t2 = ARC2::mtime();
 		$r['query_time'] = $t2 - $t1;
@@ -156,9 +157,10 @@ class FourStore_StorePlus {
 	 * @access private
 	 */
 	private function runQuery($q, $qt = '', $infos = '') {
+
 		/* ep */
 		$ep = $this->_arc2_RemoteStore->v('remote_store_endpoint', 0, $this->_arc2_RemoteStore->a);
-		if (!$ep) return false;
+		if (!$ep) return $this->_arc2_RemoteStore->addError('No Endpoint defined.');
 		/* prefixes */
 		$q = $this->_arc2_RemoteStore->completeQuery($q);
 		/* custom handling */
@@ -172,22 +174,37 @@ class FourStore_StorePlus {
 			}else{
 				$s = new FourStore_Store($ep,$this->_debug);
 				$r = $s->queryUpdate($q );
+				if(! $r){
+					$errmsg = "Error unknown.";
+					if(Net::ping($ep) == -1)
+						$errmsg = "Could not connect to ".$ep;
+						
+					return $this->_arc2_RemoteStore->addError($errmsg );
+				}
 			}
 		}else{
 			$s = new FourStore_Store($ep,$this->_debug);
 			$resp = $s->queryRead($q );
+			
+			if($resp == ""){
+					$errmsg = "Error unknown.";
+					if(Net::ping($ep) == -1)
+						$errmsg = "Could not connect to ".$ep;
+						
+					return $this->_arc2_RemoteStore->addError($errmsg );
+			}
 
 			if(preg_match_all('%<!--(.*error.*)-->%m',$resp,$errorResponse)){
 				$message4s = $errorResponse[1][0];
 				return $this->_arc2_RemoteStore->addError("4Store message : ".$message4s ."\n query :\n".$q );
 			}
 
-			$parser = ARC2::getSPARQLXMLResultParser($this->_config) ;
-			$parser->parse($ep, $resp);
+			$parser = ARC2::getSPARQLXMLResultParser() ;
+			$parser->parse('', $resp);
 			$err = $parser->getErrors();
 			if($err)
-			return $this->_arc2_RemoteStore->addError($err);
-	   
+				return $this->_arc2_RemoteStore->addError($err);
+			
 			if ($qt == 'ask') {
 				$bid = $parser->getBooleanInsertedDeleted();
 				$r = $bid['boolean'];

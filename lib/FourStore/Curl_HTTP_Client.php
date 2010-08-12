@@ -479,6 +479,12 @@ class Curl_HTTP_Client
 		return curl_getinfo($this->ch,CURLINFO_HTTP_CODE);
 	}
 
+	function get_info()
+	{
+		return curl_getinfo($this->ch);
+	
+	}
+	
 	/**
 	 * Return last error message and error number
 	 * @return string error msg
@@ -599,6 +605,6 @@ class Curl_HTTP_Client
 			return $result;
 		}
 	}
-
+	
 }
 ?>

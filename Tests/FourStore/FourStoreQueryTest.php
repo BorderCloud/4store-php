@@ -30,7 +30,7 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 					 		
 		$q = 'select * where {?x ?y ?z.} ';
 
-    	$sp = new FourStore_StorePlus($EndPointSparql,$modeDebug);
+    	$sp = new FourStore_StorePlus($EndPointSparql,true,$modeDebug);
     	
     	$rows = $sp->query($q, 'rows');
     	//print_r($rows);
@@ -59,7 +59,7 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 					 
 		$q = 'select count(?x) AS count where {?x ?y ?z.} ';
 
-    	$sp = new FourStore_StorePlus($EndPointSparql,$modeDebug);
+    	$sp = new FourStore_StorePlus($EndPointSparql,true,$modeDebug);
     	
     	$rows = $sp->query($q, 'rows');
     	//print_r($rows);
@@ -259,15 +259,16 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 		//print_r($res);
 		$this->assertEquals(2, $s->count());		
 		
-		$sp = new FourStore_StorePlus($EndPointSparql,$modeDebug);
+		$sp = new FourStore_StorePlus($EndPointSparql);
 		
 		//Security block without graph
 		$q = $prefixSparql." \n
 			DELETE DATA {     
-				a:A b:Name \"Test4\" . 
+				GRAPH <".$graph1."> {a:A b:Name \"Test4\".} 
     		}";
 		$res = $sp->query($q,'raw' );
 		$err = $sp->getErrors();
+		//print_r($err);
 	    $this->assertTrue(count($err)> 0);
 	    
 		$q = $prefixSparql."\n ASK WHERE{ a:A b:Name \"Test4\" .}";
@@ -356,6 +357,62 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 		$this->assertFalse($res);
 		
     	$r = $s->delete($graph1);    	
+    	$this->checkIfInitialState($s);
+    }
+    
+    public function testSelectSerializeAndDelete()
+    {
+    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    			
+    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$this->checkIfInitialState($s);
+		$r = $s->set($graph1, 
+					 $prefixTurtle . "\n@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+					a:A b:Name \"Test2\"@en.
+					a:A b:Name \"Test3\"@fr.
+					a:A b:Name \"Test4\".
+					a:A b:date \"2010-03-09T22:30:00Z\"^^xsd:dateTime .
+					");
+					 		
+		$q = $prefixSparql. "\n select * where {GRAPH <".$graph1."> {a:A ?p ?o.}} ";
+
+    	$sp = new FourStore_StorePlus($EndPointSparql,true,$modeDebug);
+    	
+    	$triples = $sp->query($q,'rows');
+    	
+    	$err = $sp->getErrors();
+	    if ($err) {
+	    	print_r($err);
+	    	$this->assertTrue(false);
+		}
+		
+	    for ($i = 0, $i_max = count($triples); $i < $i_max; $i++) {
+		 $triples[$i]['s'] = "http://example.com/test/a/A";
+		 $triples[$i]['s type'] = "uri";
+		}
+    	//print_r($triples);
+    	/* Serializer instantiation */
+		$ser = ARC2::getNTriplesSerializer();
+			
+		/* Serialize a triples array */
+		$docd = $ser->getSerializedTriples($triples,1);
+		
+		//print_r($docd);
+    	$sp = new FourStore_StorePlus($EndPointSparql,false,$modeDebug);
+		
+		$q = "DELETE DATA {  
+				GRAPH <".$graph1."> {    
+				$docd 
+    		}}";
+		//print_r($q);
+		$res = $sp->query($q,'raw' );
+		$err = $sp->getErrors();
+	    if ($err) {
+	    	print_r($err);
+	    	$this->assertTrue(false);
+		}
+    	$this->assertTrue($res);
+    	  	
     	$this->checkIfInitialState($s);
     }
     

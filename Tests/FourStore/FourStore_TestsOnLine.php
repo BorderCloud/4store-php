@@ -6,11 +6,11 @@ require_once 'FourStoreDataTest.php';
 require_once 'FourStoreQueryTest.php';
 require_once 'FourStoreMatchingTest.php';
 
-class FourStore_AllTests extends PHPUnit_Framework_TestSuite
+class FourStore_TestsOnLine extends PHPUnit_Framework_TestSuite
 {
     public static function suite()
     {
-    	$suite = new FourStore_AllTests('Test ALL');
+    	$suite = new FourStore_TestsOnLine('Tests OnLine');
     	
     	$suite->addTestSuite('FourStoreToolsTest');
     	$suite->addTestSuite('FourStoreDataTest');

@@ -1,7 +1,8 @@
 <?php
 require_once 'PHPUnit/Framework.php';
 
-require_once 'FourStore/FourStore_AllTests.php';
+require_once 'FourStore/FourStore_TestsOnLine.php';
+require_once 'FourStore/FourStore_TestsOffLine.php';
 
 //Config PHPunit
 $EndPointSparql = "http://localhost:8080/sparql/";
@@ -25,7 +26,8 @@ class AllTests
     {
         $suite = new PHPUnit_Framework_TestSuite('Project');
  
-        $suite->addTest(FourStore_AllTests::suite());
+        $suite->addTest(FourStore_TestsOffLine::suite());
+        $suite->addTest(FourStore_TestsOnLine::suite());
  
         return $suite;
     }

@@ -30,6 +30,7 @@
  */
 
 
+require_once("Net.php");
 require_once("Curl_HTTP_Client.php");
 
 /**
@@ -62,20 +63,32 @@ class FourStore_Store {
 		$this->_debug = $debug;
 		$this->_endpoint = $endpoint;
 	}
+	
+//	/**
+//	 * Check if the triplestore is up.
+//	 * @return boolean true if the triplestore is up.
+//	 * @access public
+//	 */
+//	public function checkEndpoint() {
+//		$client = &new Curl_HTTP_Client();
+//		$sUri    = $this->_endpoint;
+//		$query =  "select * where {?x ?y ?z.} LIMIT 1";
+//		$data = array("query" => $query);
+//
+//		$response = $client->send_post_data($sUri, $data	);
+//		$code = $client->get_http_response_code();
+//		
+//		$this->debugLog($query,$sUri,$code,$response);
+//		return $code == 200;
+//	}
 
 	/**
-	 * Check if the triplestore is up.
+	 * Check if the server is up.
 	 * @return boolean true if the triplestore is up.
 	 * @access public
 	 */
 	public function check() {
-		$client = &new Curl_HTTP_Client();
-		$sUri    = $this->_endpoint;
-		$data = array("query" =>  "select * where {?x ?y ?z.} LIMIT 1");
-
-		$response = $client->send_post_data($sUri, $data	);
-		$code = $client->get_http_response_code();
-		return $code == 200;
+		return Net::ping($this->_endpoint) != -1;
 	}
 
 	/**
@@ -202,9 +215,9 @@ class FourStore_Store {
 		$code = $client->get_http_response_code();
 
 		if($typeOutput == "application/sparql-results+xml" )
-		$response = $client->send_post_data($sUri, $data);
+			$response = $client->send_post_data($sUri,$data);
 		else
-		$response = $client->send_post_data($sUri, $data,$header);
+			$response = $client->send_post_data($sUri,$data,$header);
 
 		$code = $client->get_http_response_code();
 			
@@ -214,7 +227,7 @@ class FourStore_Store {
 		{
 			$datastr = print_r($data, true);
 			$headerstr = print_r($header, true);
-			$this->errorLog("Set:\nHeader :".$headerstr."\n Data:".$datastr,$sUri,$code,$response);
+			$this->errorLog("Set:\nHeader :".$headerstr."\n Data:".$datastr,$sUri,$code,$response);			
 			return "";
 		}
 		return $response;
@@ -266,8 +279,8 @@ class FourStore_Store {
 
 		$this->debugLog($query,$sUri,$code,$response);
 			
-		//FIXME in 4Store : check in the next version
-		if($code == 200 || $code == 0 || $code == 100 ) //bug
+		//FIXME in 4Store : check in the next version || $code == 0 || $code == 100
+		if($code == 200 ) //bug
 		{
 			return true;
 		}
