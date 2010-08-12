@@ -139,7 +139,7 @@ class ARC2_RemoteStore extends ARC2_Class {
     $suffix = $mappings[$format] . 'Parser';
     ARC2::inc($suffix);
     $cls = 'ARC2_' . $suffix;
-    $parser =& new $cls($this->a, $this);
+    $parser = new $cls($this->a, $this);
     $parser->parse($ep, $resp);
     /* ask|load|insert|delete */
     if (in_array($qt, array('ask', 'load', 'insert', 'delete'))) {
