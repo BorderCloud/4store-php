@@ -1,4 +1,6 @@
 <?php
+
+
 require 'init4Store.php';
 require '../lib/FourStore/FourStore_StorePlus.php';
 
@@ -48,7 +50,7 @@ require '../lib/FourStore/FourStore_StorePlus.php';
 	}
 	var_dump($res);
 	
-// READ ONLY in 4STORE ******************************************
+// READ ONLY  ******************************************
 	
 	//put argument false to write
 	$sp_readonly = new FourStore_StorePlus($endpoint);

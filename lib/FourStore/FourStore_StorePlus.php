@@ -68,7 +68,7 @@ class FourStore_StorePlus {
 		  'remote_store_endpoint' => $endpoint,
 		);
 
-		$this->_arc2_RemoteStore = ARC2::getRemoteStore($this->_config);
+		$this->_arc2_RemoteStore = @ARC2::getRemoteStore($this->_config);
 	}
 
 	/**
@@ -199,7 +199,7 @@ class FourStore_StorePlus {
 				return $this->_arc2_RemoteStore->addError("4Store message : ".$message4s ."\n query :\n".$q );
 			}
 
-			$parser = ARC2::getSPARQLXMLResultParser() ;
+			$parser = @ARC2::getSPARQLXMLResultParser() ;
 			$parser->parse('', $resp);
 			$err = $parser->getErrors();
 			if($err)

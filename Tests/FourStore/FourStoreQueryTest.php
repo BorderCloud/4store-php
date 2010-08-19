@@ -360,60 +360,20 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
     	$this->checkIfInitialState($s);
     }
     
-    public function testSelectSerializeAndDelete()
+    public function testSelectDBpedia()
     {
     	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
-    			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
-    	$this->checkIfInitialState($s);
-		$r = $s->set($graph1, 
-					 $prefixTurtle . "\n@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-					a:A b:Name \"Test2\"@en.
-					a:A b:Name \"Test3\"@fr.
-					a:A b:Name \"Test4\".
-					a:A b:date \"2010-03-09T22:30:00Z\"^^xsd:dateTime .
-					");
-					 		
-		$q = $prefixSparql. "\n select * where {GRAPH <".$graph1."> {a:A ?p ?o.}} ";
-
-    	$sp = new FourStore_StorePlus($EndPointSparql,true,$modeDebug);
+		$q = 'select *  where {?x ?y ?z.} LIMIT 5';
+    	$sp = new FourStore_StorePlus("http://dbpedia.org/sparql");
     	
-    	$triples = $sp->query($q,'rows');
-    	
+    	$rows = $sp->query($q, 'rows');
+    	//print_r($rows);
     	$err = $sp->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
 		}
-		
-	    for ($i = 0, $i_max = count($triples); $i < $i_max; $i++) {
-		 $triples[$i]['s'] = "http://example.com/test/a/A";
-		 $triples[$i]['s type'] = "uri";
-		}
-    	//print_r($triples);
-    	/* Serializer instantiation */
-		$ser = ARC2::getNTriplesSerializer();
-			
-		/* Serialize a triples array */
-		$docd = $ser->getSerializedTriples($triples,1);
-		
-		//print_r($docd);
-    	$sp = new FourStore_StorePlus($EndPointSparql,false,$modeDebug);
-		
-		$q = "DELETE DATA {  
-				GRAPH <".$graph1."> {    
-				$docd 
-    		}}";
-		//print_r($q);
-		$res = $sp->query($q,'raw' );
-		$err = $sp->getErrors();
-	    if ($err) {
-	    	print_r($err);
-	    	$this->assertTrue(false);
-		}
-    	$this->assertTrue($res);
-    	  	
-    	$this->checkIfInitialState($s);
+    	$this->assertEquals(5,count($rows));
     }
     
     private function checkIfInitialState($s){

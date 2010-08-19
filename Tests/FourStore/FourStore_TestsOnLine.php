@@ -5,6 +5,7 @@ require_once 'FourStoreToolsTest.php';
 require_once 'FourStoreDataTest.php';
 require_once 'FourStoreQueryTest.php';
 require_once 'FourStoreMatchingTest.php';
+require_once 'FourStoreFormatTest.php';
 
 class FourStore_TestsOnLine extends PHPUnit_Framework_TestSuite
 {
@@ -16,7 +17,7 @@ class FourStore_TestsOnLine extends PHPUnit_Framework_TestSuite
     	$suite->addTestSuite('FourStoreDataTest');
     	$suite->addTestSuite('FourStoreQueryTest');
     	$suite->addTestSuite('FourStoreMatchingTest');
-    	
+    	$suite->addTestSuite('FourStoreFormatTest');
 		return $suite;
     }
     

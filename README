@@ -15,6 +15,11 @@ git clone http://github.com/BorderCloud/4store-php.git
 
 == Release-Notes ==
 
+* V0.2.0.0 version 4store-php by Karima Rafes <karima.rafes@bordercloud.com>
+	- Add serializer 
+	- Add simple static functions (insert, delete) for the extension Mediawiki LinkedWiki
+	- Clean Deprecated warning of ARC2
+
 * V0.1.0.0 version 4store-php by Karima Rafes <karima.rafes@bordercloud.com>
 	- Communication with the functions cURL of PHP only.
 	- Parse query and response with lib ARC (arc.semsol.org)

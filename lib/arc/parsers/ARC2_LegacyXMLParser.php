@@ -39,23 +39,17 @@ class ARC2_LegacyXMLParser extends ARC2_Class {
     $this->reader =& $reader;
   }
 
-  function parse($path = '', $data = '', $iso_fallback = false) {
+  function parse($path, $data = '', $iso_fallback = false) {
     $this->nodes = array();
     $this->node_count = 0;
     $this->level = 0;
     /* reader */
     if (!$this->v('reader')) {
       ARC2::inc('Reader');
-      $this->reader = new ARC2_Reader($this->a, $this);
+      $this->reader = & new ARC2_Reader($this->a, $this);
     }
-    
-    if($data == ''){
-    	$this->reader->setAcceptHeader('Accept: application/xml; q=0.9, */*; q=0.1');
-    	$this->reader->activate($path, $data);
-    }else{
-    	$this->reader->stream = $this->reader->getDataStream($data);
-    }
-    	
+    $this->reader->setAcceptHeader('Accept: application/xml; q=0.9, */*; q=0.1');
+    $this->reader->activate($path, $data);
     $this->x_base = isset($this->a['base']) && $this->a['base'] ? $this->a['base'] : $this->reader->base;
     $this->base = $this->x_base;
     $this->doc_url = $this->reader->base;

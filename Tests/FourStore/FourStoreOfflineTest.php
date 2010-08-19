@@ -18,8 +18,7 @@ class FourStoreOfflineTest extends PHPUnit_Framework_TestCase
 					 		
 		$q = 'select * where {?x ?y ?z.} ';
 
-    	$sp = new FourStore_StorePlus($EndPointSparql,$modeDebug);
-    	
+    	$sp = new FourStore_StorePlus($EndPointSparql,true,$modeDebug);
     	$rows = $sp->query($q, 'rows');
     	//print_r($rows);
     	$err = $sp->getErrors();
@@ -50,5 +49,5 @@ class FourStoreOfflineTest extends PHPUnit_Framework_TestCase
     	$this->assertTrue(count($err)>0);
     	$this->assertFalse($res);
     }
-   
+
 }
