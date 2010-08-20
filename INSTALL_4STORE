@@ -8,7 +8,7 @@
 #
 #	INSTALL 4STORE ####################################################
 #	Command lines :
-yum install gcc glib2-devel libxml2-devel pcre-devel avahi avahi-devel avahi-glib-devel readline-devel ncurses-devel termcap libtermcap-devel expat-devel zlib-devel
+yum install gcc glib2-devel libxml2-devel pcre-devel avahi avahi-devel avahi-glib-devel readline-devel ncurses-devel termcap libtermcap-devel expat-devel zlib-devel libtool automake flex gtk-doc bison php-phpunit-PHPUnit.noarch
 
 #for fedora, put this line "-A INPUT -m state --state NEW -m udp -p udp --dport 5353 -d 224.0.0.251 -j ACCEPT" in /etc/sysconfig/iptables
 # reload iptables (or reboot...)
@@ -66,13 +66,13 @@ make install
 # It's OK ?  Great ;) ... the worst is behind you ! 
 # NO ? find the response in the forum 4Store: http://groups.google.com/group/4store-support
 
-# Last test
+# Last test (killall 4s-httpd before executing this line)
 4s-update test 'PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> PREFIX a: <http://example.com/test/a/> PREFIX b: <http://example.com/test/b/> PREFIX ex: <http://example.com/> INSERT DATA { GRAPH ex:test { a:A b:Name "Test2" .}}'
 
 # STOP 4STORE ######################################################
 #stop all
 killall 4s-backend
-killall 4s-http
+killall 4s-httpd
 
 # RESTART 4STORE ####################################################
 4s-backend test
