@@ -360,21 +360,21 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
     	$this->checkIfInitialState($s);
     }
     
-    public function testSelectDBpedia()
-    {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
-		$q = 'select *  where {?x ?y ?z.} LIMIT 5';
-    	$sp = new FourStore_StorePlus("http://dbpedia.org/sparql");
-    	
-    	$rows = $sp->query($q, 'rows');
-    	//print_r($rows);
-    	$err = $sp->getErrors();
-	    if ($err) {
-	    	print_r($err);
-	    	$this->assertTrue(false);
-		}
-    	$this->assertEquals(5,count($rows));
-    }
+//    public function testSelectDBpedia()
+//    {
+//    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+//		$q = 'select *  where {?x ?y ?z.} LIMIT 5';
+//    	$sp = new FourStore_StorePlus("http://dbpedia.org/sparql");
+//    	
+//    	$rows = $sp->query($q, 'rows');
+//    	//print_r($rows);
+//    	$err = $sp->getErrors();
+//	    if ($err) {
+//	    	print_r($err);
+//	    	$this->assertTrue(false);
+//		}
+//    	$this->assertEquals(5,count($rows));
+//    }
     
     private function checkIfInitialState($s){
     	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;

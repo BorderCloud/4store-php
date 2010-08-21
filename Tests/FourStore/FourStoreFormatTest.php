@@ -110,6 +110,58 @@ class FourStoreFormatTest extends PHPUnit_Framework_TestCase
     	$this->checkIfInitialState($s);
     }
     
+    public function testIRIUTF8WithQuote()
+    {
+    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    			
+    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$this->checkIfInitialState($s);
+    	
+    	$uri = "http://fr.test2.daria/wiki/Spécial:URIResolver/Tête_d'or";
+    	$turtle ="<http://fr.test2.daria/wiki/Spécial:URIResolver/Tête_d'or> <http://fr.test2.daria/wiki/Spécial:URIResolver/Attribut:Truc> \"test\" .";
+    	SparqlTools::insert($turtle,$graph1,$EndPointSparql);
+    	$this->assertEquals(1, $s->count($graph1));
+    	SparqlTools::deleteTriples($uri,$graph1,$EndPointSparql);	
+		
+		$this->assertEquals(0, $s->count($graph1));		
+		
+    	$r = $s->delete($graph1);    	
+    	$this->checkIfInitialState($s);
+    }
+    
+    
+    public function testSelectIRIUTF8WithQuote()
+    {
+    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    			
+    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$this->checkIfInitialState($s);
+    	
+    	$uri = "http://fr.test2.daria/wiki/Spécial:URIResolver/Tête_d'or";
+    	$turtle ="<http://fr.test2.daria/wiki/Spécial:URIResolver/Tête_d'or> <http://fr.test2.daria/wiki/Spécial:URIResolver/Attribut:Truc> \"test\" .";
+    	SparqlTools::insert($turtle,$graph1,$EndPointSparql);
+    	$this->assertEquals(1, $s->count($graph1));
+    	
+    	$q = "select *  where {<".$uri."> ?y ?z.}";
+    	$sp = new FourStore_StorePlus($EndPointSparql);
+    	
+    	$rows = $sp->query($q, 'rows');
+    	print_r($rows);
+    	$err = $sp->getErrors();
+	    if ($err) {
+	    	print_r($err);
+	    	$this->assertTrue(false);
+		}
+    	$this->assertEquals(1,count($rows));    	
+    	
+    	SparqlTools::deleteTriples($uri,$graph1,$EndPointSparql);	
+		
+		$this->assertEquals(0, $s->count($graph1));		
+		
+    	$r = $s->delete($graph1);    	
+    	$this->checkIfInitialState($s);
+    }
+    
     public function testURItoIRI()
     {
 		$uri ="http://fr.test2.daria/wiki/Spécial:URIResolver/Coordonn-C3-A9e";
