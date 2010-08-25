@@ -6,6 +6,7 @@ require_once 'FourStoreDataTest.php';
 require_once 'FourStoreQueryTest.php';
 require_once 'FourStoreMatchingTest.php';
 require_once 'FourStoreFormatTest.php';
+require_once 'FourStore_NTriplesSerializerTest.php';
 
 class FourStore_TestsOnLine extends PHPUnit_Framework_TestSuite
 {
@@ -18,6 +19,7 @@ class FourStore_TestsOnLine extends PHPUnit_Framework_TestSuite
     	$suite->addTestSuite('FourStoreQueryTest');
     	$suite->addTestSuite('FourStoreMatchingTest');
     	$suite->addTestSuite('FourStoreFormatTest');
+    	$suite->addTestSuite('FourStore_NTriplesSerializerTest');
 		return $suite;
     }
     
@@ -40,7 +42,7 @@ class FourStore_TestsOnLine extends PHPUnit_Framework_TestSuite
 	        
 	        print "# Start daemon http for the backend test :\n";
 	        print '4s-httpd '.$NameBackend."\n";
-	        $last_line = system('4s-httpd '.$NameBackend, $retval);
+	        $last_line = system('4s-httpd '.$NameBackend, $retval); //-H 127.0.0.1 -p 8080 
 	        print $retval . "\n";
 	        print "********************END SETUP***********************\n";
     	}

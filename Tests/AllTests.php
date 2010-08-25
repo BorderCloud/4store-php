@@ -5,7 +5,7 @@ require_once 'FourStore/FourStore_TestsOnLine.php';
 require_once 'FourStore/FourStore_TestsOffLine.php';
 
 //Config PHPunit
-$EndPointSparql = "http://localhost:8080/sparql/";
+$EndPointSparql = "http://127.0.0.1:8080/sparql/";
 $NameBackend = "test";
  $SetupEndPoint = TRUE;
 $CleanEndPoint = TRUE;
