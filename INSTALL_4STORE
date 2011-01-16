@@ -44,7 +44,7 @@ make install
 #import 4store
 cd ..
 #Branch delete
-git clone -b delete  http://github.com/garlik/4store.git
+git clone  http://github.com/garlik/4store.git
 cd 4store
 
 # Problem With Fedora13
