@@ -42,6 +42,7 @@ make
 make check 
 make install 
 
+#import 4store
 cd ..
 wget http://4store.org/download/4store-v1.1.2.tar.gz		
 tar xvzf 4store-v1.1.2.tar.gz
