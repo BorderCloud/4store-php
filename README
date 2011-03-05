@@ -15,6 +15,9 @@ git clone http://github.com/BorderCloud/4store-php.git
 
 == Release-Notes ==
 
+* V0.3.0.0 version 4store-php by Karima Rafes <karima.rafes@bordercloud.com>
+	- Use the last version of ARC2 (https://github.com/BorderCloud/arc2)
+
 * V0.2.0.0 version 4store-php by Karima Rafes <karima.rafes@bordercloud.com>
 	- Add serializer 
 	- Add simple static functions (insert, delete) for the extension Mediawiki LinkedWiki

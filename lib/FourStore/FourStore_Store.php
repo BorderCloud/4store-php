@@ -39,12 +39,19 @@ require_once("Curl_HTTP_Client.php");
 class FourStore_Store {
 
 	/**
-	 * Endpoint sparql
+	 * Endpoint 
 	 * @access private
 	 * @var string
 	 */
 	private $_endpoint;
-
+		
+	/**
+	 * Endpoint for data API
+	 * @access private
+	 * @var string
+	 */
+	private $_endpoint_data;
+	
 	/**
 	 * in the constructor set debug to true in order to get usefull output
 	 * @access private
@@ -54,14 +61,15 @@ class FourStore_Store {
 
 	/**
 	 * Constructor of FourStore_Store
-	 * @param string $endpoint : url of endpoint, example : http://localhost:8080/sparql
+	 * @param string $endpoint : url of endpoint, example : http://localhost:8080/sparql/
 	 * @param boolean $debug : false by default, set debug to true in order to get usefull output
 	 * @access public
 	 */
 	public function __construct($endpoint,$debug = false)
 	{
 		$this->_debug = $debug;
-		$this->_endpoint = $endpoint;
+		$this->_endpoint = $endpoint;		
+		$this->_endpoint_data = array_shift(explode("/sparql/", $this->_endpoint)) . "/data/";
 	}
 	
 //	/**
@@ -102,7 +110,7 @@ class FourStore_Store {
 		$client = &new Curl_HTTP_Client();
 
 		$headers = array( 'Content-Type: application/x-turtle' );
-		$sUri    = $this->_endpoint . $graph;
+		$sUri    = $this->_endpoint_data . $graph;
 
 		$response = $client->send_put_data($sUri,$headers, $turtle);
 		$code = $client->get_http_response_code();
@@ -128,10 +136,8 @@ class FourStore_Store {
 	 * @access public
 	 */
 	public function add($graph, $turtle) {
-		$post_endpoint = array_shift(explode("/sparql/", $this->_endpoint)) . "/data/";
-
 		$data = array( "graph" => $graph, "data" => $turtle , "mime-type" => 'application/x-turtle' );
-		$sUri    = $post_endpoint;
+		$sUri    = $this->_endpoint_data;
 
 		$client = &new Curl_HTTP_Client();
 		$response = $client->send_post_data($sUri, $data);
@@ -157,7 +163,7 @@ class FourStore_Store {
 	 */
 	public function delete($graph) {
 		$client = &new Curl_HTTP_Client();
-		$sUri    = $this->_endpoint . $graph ;
+		$sUri    = $this->_endpoint_data. $graph ;
 		$response = $client->send_delete($sUri);
 		$code = $client->get_http_response_code();
 
@@ -180,16 +186,16 @@ class FourStore_Store {
 	 */
 	public function count($graph= null ) {
 		$r="";
-		$count = -1;
+		$count = 0;
 		if($graph != null){
 			//FIXME count(*) doesn't work
-			$r = $this->queryReadTabSeparated("SELECT count(?a) AS count WHERE  { GRAPH <".$graph."> {?a ?b ?c}}");
+			$r = $this->queryReadTabSeparated("SELECT (count(?a) AS ?count) WHERE  { GRAPH <".$graph."> {?a ?b ?c}}");
 		}else{
-			$r = $this->queryReadTabSeparated("SELECT count(?a) AS count WHERE {?a ?b ?c}");
+			$r = $this->queryReadTabSeparated("SELECT (count(?a) AS ?count) WHERE {?a ?b ?c}");
 		}
 
 		if(preg_match_all('%\?count\n"([0-9]+)"\^\^<http://www.w3.org/2001/XMLSchema#integer>%m',$r,$countResponse))
-		$count = $countResponse[1][0];
+			$count = $countResponse[1][0];
 
 		return $count;
 	}

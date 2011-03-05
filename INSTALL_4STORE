@@ -17,13 +17,14 @@ yum install gcc glib2-devel libxml2-devel pcre-devel avahi avahi-devel avahi-gli
 mkdir 4s
 cd 4s
 
+# Read before also : http://4store.org/trac/wiki/Install
 # for raptor, rasqual and 4store
 export PKG_CONFIG_PATH=/usr/lib64/pkgconfig
 
 # install a 64-bit raptor from freshly extracted source
-wget http://download.librdf.org/source/raptor-1.4.21.tar.gz
-tar xvzf raptor-1.4.21.tar.gz
-cd raptor-1.4.21
+wget http://download.librdf.org/source/raptor2-2.0.0.tar.gz
+tar xvzf raptor2-2.0.0.tar.gz
+cd raptor2-2.0.0
 ./autogen.sh
 ./configure --libdir=/usr/lib64
 make
@@ -32,29 +33,24 @@ make install
 
 # similarly for 64-bit rasqal
 cd ..
-wget http://download.librdf.org/source/rasqal-0.9.19.tar.gz 
-tar xvzf rasqal-0.9.19.tar.gz 
-cd rasqal-0.9.19
+wget http://download.librdf.org/source/rasqal-0.9.24.tar.gz
+tar xvzf rasqal-0.9.24.tar.gz 
+cd rasqal-0.9.24
 ./autogen.sh 
 ./configure  '--enable-query-languages=sparql rdql laqrs'  --libdir=/usr/lib64 
 make  
 make check 
 make install 
 
-#import 4store
 cd ..
-#Branch delete
-git clone -b delete  http://github.com/garlik/4store.git
-cd 4store
-
-# Problem With Fedora13
-#vim src/frontend/Makefile
-# Replace in the file
-##4s-size: size.o ../common/lib4store.a
-##        $(CC) $(LDFLAGS) -o 4s-size $^ -lm $(LIBS)
-
+wget http://4store.org/download/4store-v1.1.2.tar.gz		
+tar xvzf 4store-v1.1.2.tar.gz
+cd 4store-v1.1.2
+./configure
 make
-make install 
+mkdir -P /var/lib/4store/ 
+make test
+make install
 
 # TEST 4STORE ####################################################
 #	Command lines :

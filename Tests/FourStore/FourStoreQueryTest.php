@@ -44,6 +44,41 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
     	$this->checkIfInitialState($s);
     }
     
+    public function testSelectDistinct()
+    {
+    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    			
+    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$this->checkIfInitialState($s);
+		$r = $s->set($graph1, 
+					 $prefixTurtle ."\n
+					a:A2 b:Name \"Test2\".
+					a:A3 b:Name \"Test3\".
+					a:A4 b:Name \"Test4\".
+					a:A2 b:Name2 \"t2\".
+					a:A3 b:Name2 \"t3\".
+					a:A4 b:Name2 \"t4\".
+					");
+					 		
+		$q =  $prefixSparql ."\n select  * where {?x b:Name ?name. ?x b:Name2 ?name2. } ";
+
+    	$sp = new FourStore_StorePlus($EndPointSparql,true,$modeDebug);
+    	
+    	$rows = $sp->query($q, 'rows');
+    	print_r($rows);
+    	$err = $sp->getErrors();
+	    if ($err) {
+	    	print_r($err);
+	    	$this->assertTrue(false);
+		}
+    	$this->assertEquals(3,count($rows));   	
+    	
+    	$r = $s->delete($graph1);    
+    		
+    	$this->checkIfInitialState($s);
+    }
+    
+    
     public function testCount()
     {
     	global $modeSkipProblem,$EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
@@ -57,7 +92,7 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 					a:A b:Name \"Test4\".
 					");
 					 
-		$q = 'select count(?x) AS count where {?x ?y ?z.} ';
+		$q = 'select (count(?x) AS ?count) where {?x ?y ?z.} ';
 
     	$sp = new FourStore_StorePlus($EndPointSparql,true,$modeDebug);
     	
@@ -76,15 +111,7 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
     }
     
     public function testCountBug()
-    {
-    	global $modeSkipProblem;
-    	if($modeSkipProblem)
-    		$this->markTestSkipped(
-              "select count(*) AS count where {?x ?y ?z.} \n
-               doesn't work. 
-               Fix : select count(?x) AS count where {?x ?y ?z.}"
-            );
-            
+    {        
     	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
     	$s = new FourStore_Store($EndPointSparql,$modeDebug);
@@ -96,7 +123,7 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 					a:A b:Name \"Test4\".
 					");
 					    	
-		$q = 'select count(*) AS count where {?x ?y ?z.} ';
+		$q = 'select (count(*) AS ?count) where {?x ?y ?z.} ';
 
     	$sp = new FourStore_StorePlus($EndPointSparql,$modeDebug);
     	

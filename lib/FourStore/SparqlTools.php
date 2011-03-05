@@ -26,7 +26,7 @@
  THE SOFTWARE.
  */
 
-require_once(dirname(__FILE__) . '/../arc/ARC2.php');
+require_once(dirname(__FILE__) . '/../arc2/ARC2.php');
 require_once("FourStore_StorePlus.php");
 require_once("FourStore_NTriplesSerializer.php");
 class SparqlTools {

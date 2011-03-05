@@ -274,6 +274,123 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
     	$this->checkIfInitialState($s);
     }
     
+ 
+    public function testMatchingLiteralsWithStringTypes()
+    {    	
+    	global $modeSkipProblem;
+    	if($modeSkipProblem)
+    		$this->markTestSkipped(              
+              "Matching Literals with type String."
+            );
+            
+    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    			
+    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$this->checkIfInitialState($s);
+					 
+		$sp = new FourStore_StorePlus($EndPointSparql,false,$modeDebug);
+		
+		$prefix = $prefixSparql . "\n PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n";
+
+		$q = $prefix." \n
+			INSERT DATA {  
+				GRAPH <".$graph1."> {    
+				a:A b:Name \"Test\"^^xsd:string .  
+				a:A b:Name \"Test2\" .  
+    		}}";
+		$res = $sp->query($q );
+		//print_r($res);
+		$this->assertEquals(2, $s->count($graph1));		
+		
+    	$q = $prefix." \n select * where {  
+				GRAPH <".$graph1."> {?a ?b \"Test\"^^xsd:string.}} ";
+    	$rows = $sp->query($q, 'rows');
+    	//print_r($rows);
+    	$err = $sp->getErrors();
+	    if ($err) {
+	    	print_r($err);
+	    	$this->assertTrue(false);
+		}		
+		$this->assertEquals(1, count($rows));	
+		
+    	$q = $prefix." \n select * where {  
+				GRAPH <".$graph1."> {?a ?b \"Test2\"^^xsd:string.}} ";
+    	$rows = $sp->query($q, 'rows');
+    	//print_r($rows);
+    	$err = $sp->getErrors();
+	    if ($err) {
+	    	print_r($err);
+	    	$this->assertTrue(false);
+		}		
+		$this->assertEquals(1, count($rows));	
+		
+    	$q = $prefix." \n select * where {  
+				GRAPH <".$graph1."> {?a ?b \"Test\".}} ";
+    	$rows = $sp->query($q, 'rows');
+    	//print_r($rows);
+    	$err = $sp->getErrors();
+	    if ($err) {
+	    	print_r($err);
+	    	$this->assertTrue(false);
+		}		
+		$this->assertEquals(1, count($rows));	
+		
+    	$q = $prefix." \n select * where {  
+				GRAPH <".$graph1."> {?a ?b \"Test2\".}} ";
+    	$rows = $sp->query($q, 'rows');
+    	//print_r($rows);
+    	$err = $sp->getErrors();
+	    if ($err) {
+	    	print_r($err);
+	    	$this->assertTrue(false);
+		}		
+		$this->assertEquals(1, count($rows));	
+		
+    	$r = $s->delete($graph1);    	
+    	$this->checkIfInitialState($s);
+    }
+    
+  public function testSelectDistinct()
+    {
+    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    			
+    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$this->checkIfInitialState($s);
+					 		
+    	$sp = new FourStore_StorePlus($EndPointSparql,false,$modeDebug);
+		$prefix = $prefixSparql . "\n PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n";
+		
+		$q = $prefix." \n
+			INSERT DATA {  
+				GRAPH <".$graph1."> {    
+					a:A2 b:Name \"Test2\"^^xsd:String .  
+					a:A3 b:Name \"Test3\"^^xsd:String .  
+					a:A4 b:Name \"Test4\"^^xsd:String .  
+					a:A2 b:Name2 \"t2\"^^xsd:String.
+					a:A3 b:Name2 \"t3\"^^xsd:String.
+					a:A4 b:Name2 \"t4\"^^xsd:String. 
+    		}}";
+		$res = $sp->query($q );
+		//print_r($res);
+		$this->assertEquals(6, $s->count($graph1));	
+		
+		$q = $prefix."\n select  * where {?x b:Name ?name. ?x b:Name2 ?name2. } ";
+
+    	
+    	$rows = $sp->query($q, 'rows');
+    	print_r($rows);
+    	$err = $sp->getErrors();
+	    if ($err) {
+	    	print_r($err);
+	    	$this->assertTrue(false);
+		}
+    	$this->assertEquals(3,count($rows));   	
+    	
+    	$r = $s->delete($graph1);    
+    		
+    	$this->checkIfInitialState($s);
+    }
+    
  	private function checkIfInitialState($s){
     	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
 		$this->assertEquals(0, $s->count($graph1));

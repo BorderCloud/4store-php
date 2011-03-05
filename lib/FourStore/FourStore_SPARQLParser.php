@@ -31,7 +31,7 @@
  THE SOFTWARE.
  */
 
-require_once(dirname(__FILE__) . '/../arc/ARC2.php');
+require_once(dirname(__FILE__) . '/../arc2/ARC2.php');
 
 ARC2::inc('SPARQLParser');
 
