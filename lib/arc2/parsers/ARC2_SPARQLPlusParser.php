@@ -6,6 +6,12 @@ license:  http://arc.semsol.org/license
 class:    ARC2 SPARQL+ Parser (SPARQL + Aggregates + LOAD + INSERT + DELETE)
 author:   Benjamin Nowack
 version:  2010-11-16
+
+author:   Karima Rafes
+homepage: http://www.bordercloud.com
+version:  2011-03-06
+Change INSERT and DELETE
+
 */
 
 ARC2::inc('SPARQLParser');
@@ -78,44 +84,24 @@ class ARC2_SPARQLPlusParser extends ARC2_SPARQLParser {
   /* +5 */
   
   function xInsertQuery($v) {
-    if ($sub_r = $this->x('INSERT\s+', $v)) {
-      $r = array(
-        'type' => 'insert',
-        'dataset' => array(),
-      );
-      $sub_v = $sub_r[1];
-      /* target */
-      if ($sub_r = $this->x('INTO\s+', $sub_v)) {
-        $sub_v = $sub_r[1];
-        if ((list($sub_r, $sub_v) = $this->xIRIref($sub_v)) && $sub_r) {
-          $r['target_graph'] = $sub_r;
-          /* CONSTRUCT keyword, optional */
-          if ($sub_r = $this->x('CONSTRUCT\s+', $sub_v)) {
-            $sub_v = $sub_r[1];
-          }
-          /* construct template */
-          if ((list($sub_r, $sub_v) = $this->xConstructTemplate($sub_v)) && is_array($sub_r)) {
-            $r['construct_triples'] = $sub_r;
-          }
-          else {
-            $this->addError('Construct Template not found');
-            return array(0, $v);
-          }
-          /* dataset */
-          while ((list($sub_r, $sub_v) = $this->xDatasetClause($sub_v)) && $sub_r) {
-            $r['dataset'][] = $sub_r;
-          }
-          /* where */
-          if ((list($sub_r, $sub_v) = $this->xWhereClause($sub_v)) && $sub_r) {
-            $r['pattern'] = $sub_r;
-          }
-          /* solution modifier */
-          if ((list($sub_r, $sub_v) = $this->xSolutionModifier($sub_v)) && $sub_r) {
-            $r = array_merge($r, $sub_r);
-          }
-          return array($r, $sub_v);
+  	if ($sub_r = $this->x('INSERT\s+', $v)) {    	
+	      $r = array(
+	        'type' => 'insert'
+	      );
+	      $sub_v = $sub_r[1];
+	      /* target */
+	      if ($sub_r = $this->x('DATA\s+', $sub_v)) {
+	        $sub_v = $sub_r[1];
+	        if ((list($sub_r, $sub_v) = $this->xGroupGraphPattern($sub_v)) && $sub_r) {
+		      	if( 'graph' != $sub_r['patterns'][0]['type'] ){
+		            $this->addError("The graph didn't find Usage : \nPREFIX ex: <http://example.com/>  INSERT DATA { GRAPH ex:test {ax:a ex:b ex:c.}}");
+		            return array(0, $v);
+		          }
+		          $r['into'] = $sub_r['patterns'][0]['uri'];
+		      		$r['construct_triples'] = $sub_r['patterns'][0]['patterns'][0]['patterns'][0]['patterns'];
+		      	 return array($r, $sub_v);
+		    }
         }
-      }
     }
     return array(0, $v);
   }
@@ -123,44 +109,24 @@ class ARC2_SPARQLPlusParser extends ARC2_SPARQLParser {
   /* +6 */
   
   function xDeleteQuery($v) {
-    if ($sub_r = $this->x('DELETE\s+', $v)) {
-      $r = array(
-        'type' => 'delete',
-        'target_graphs' => array()
-      );
-      $sub_v = $sub_r[1];
-      /* target */
-      do {
-        $proceed = false;
-        if ($sub_r = $this->x('FROM\s+', $sub_v)) {
-          $sub_v = $sub_r[1];
-          if ((list($sub_r, $sub_v) = $this->xIRIref($sub_v)) && $sub_r) {
-            $r['target_graphs'][] = $sub_r;
-            $proceed = 1;
-          }
+	if ($sub_r = $this->x('DELETE\s+', $v)) {    	
+	      $r = array(
+	        'type' => 'delete'
+	      );
+	      $sub_v = $sub_r[1];
+	      /* target */
+	      if ($sub_r = $this->x('DATA\s+', $sub_v)) {
+	        $sub_v = $sub_r[1];
+	        if ((list($sub_r, $sub_v) = $this->xGroupGraphPattern($sub_v)) && $sub_r) {
+		      	if( 'graph' != $sub_r['patterns'][0]['type'] ){
+		            $this->addError("The graph didn't find Usage : \nPREFIX ex: <http://example.com/>  DELETE DATA { GRAPH ex:test {ax:a ex:b ex:c.}}");
+		            return array(0, $v);
+		          }
+		          $r['into'] = $sub_r['patterns'][0]['uri'];
+		      		$r['construct_triples'] = $sub_r['patterns'][0]['patterns'][0]['patterns'][0]['patterns'];
+		      	 return array($r, $sub_v);
+		    }
         }
-      } while ($proceed);
-      /* CONSTRUCT keyword, optional */
-      if ($sub_r = $this->x('CONSTRUCT\s+', $sub_v)) {
-        $sub_v = $sub_r[1];
-      }
-      /* construct template */
-      if ((list($sub_r, $sub_v) = $this->xConstructTemplate($sub_v)) && is_array($sub_r)) {
-        $r['construct_triples'] = $sub_r;
-        /* dataset */
-        while ((list($sub_r, $sub_v) = $this->xDatasetClause($sub_v)) && $sub_r) {
-          $r['dataset'][] = $sub_r;
-        }
-        /* where */
-        if ((list($sub_r, $sub_v) = $this->xWhereClause($sub_v)) && $sub_r) {
-          $r['pattern'] = $sub_r;
-        }
-        /* solution modifier */
-        if ((list($sub_r, $sub_v) = $this->xSolutionModifier($sub_v)) && $sub_r) {
-          $r = array_merge($r, $sub_r);
-        }
-      }
-      return array($r, $sub_v);
     }
     return array(0, $v);
   }

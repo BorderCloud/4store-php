@@ -1,16 +1,11 @@
 <?php
 /**
- * @version 0.1.0.0
+ * @version 0.4.0.0
  * @package Bourdercloud/4store-PHP
- * @copyright (c) 2010 Bourdercloud.com
+ * @copyright (c) 2011 Bourdercloud.com
  * @author Karima Rafes <karima.rafes@bordercloud.com>
- * 
- * This file is a fork of version 1.0 :
- * @copyright &copy; 2007 Dinke.net
- * @author Dragan Dinic <dragan@dinke.net> 
- * 
- * 
- Copyright (c) 2010 Bourdercloud.com
+
+ Copyright (c) 2011 Bourdercloud.com
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +41,7 @@
  * $post_data = array('login' => 'pera', 'password' => 'joe');
  * $html_data = $curl->send_post_data(http://www.foo.com/login.php, $post_data);
  */
-class Curl_HTTP_Client
+class Curl
 {
 	/**
 	 * Curl handler
@@ -68,14 +63,13 @@ class Curl_HTTP_Client
 	 * @var string
 	 */
 	var $error_msg;
-
-
+	
 	/**
 	 * Curl_HTTP_Client constructor
 	 * @param boolean debug
 	 * @access public
 	 */
-	function Curl_HTTP_Client($debug = false)
+	function Curl($debug = false)
 	{
 		$this->debug = $debug;
 
@@ -149,8 +143,6 @@ class Curl_HTTP_Client
 		curl_setopt($this->ch, CURLOPT_PROXY, $proxy);
 	}
 
-
-
 	/**
 	 * Send post data to target URL
 	 * return data returned from url or false if error occured
@@ -186,7 +178,6 @@ class Curl_HTTP_Client
 
 		//set method to post
 		curl_setopt($this->ch, CURLOPT_POST, true);
-
 
 		//generate post string
 		$post_array = array();
@@ -607,4 +598,3 @@ class Curl_HTTP_Client
 	}
 	
 }
-?>

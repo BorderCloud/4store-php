@@ -1,11 +1,11 @@
-<?php 
+<?php
 /**
- * @version 0.1.0.0
+ * @version 0.4.0.0
  * @package Bourdercloud/4store-PHP
- * @copyright (c) 2010 Bourdercloud.com
+ * @copyright (c) 2011 Bourdercloud.com
  * @author Karima Rafes <karima.rafes@bordercloud.com>
 
- Copyright (c) 2010 Bourdercloud.com
+ Copyright (c) 2011 Bourdercloud.com
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -25,11 +25,6 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  */
-
-require_once(dirname(__FILE__) . '/../arc2/ARC2.php');
-
-require_once("FourStore_SPARQLParser.php");
-require_once("FourStore_Store.php");
 
 /**
  * Simple tools to test a network

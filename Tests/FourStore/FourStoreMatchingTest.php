@@ -1,15 +1,15 @@
 <?php
 require_once 'PHPUnit/Framework.php';
 
-require_once (dirname(__FILE__) . '/../../lib/FourStore/FourStore_StorePlus.php');
+require_once (dirname(__FILE__) . '/../../lib/4store/Endpoint.php');
  
 class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {       
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$r = $s->delete($graph1); 
     	$r = $s->delete($graph2); 
     	$r = $s->delete("default:");   
@@ -19,12 +19,10 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
     
  	public function testMatchingLiteralsWithoutLanguageTags()
     {            
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     	    			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
-					 
-		$sp = new FourStore_StorePlus($EndPointSparql,false,$modeDebug);
 		
 		
 		$q = $prefixSparql." \n
@@ -32,8 +30,8 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
 				GRAPH <".$graph1."> {    
 				a:A1 b:Name \"Test\".  
     		}}";
-		$res = $sp->query($q,'raw' );
-		$err = $sp->getErrors();
+		$res = $s->query($q,'raw' );
+		$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -42,9 +40,9 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
 		
     	$q = $prefixSparql." \n select * where {  
 				GRAPH <".$graph1."> {?a ?b \"Test\" .}} ";
-    	$rows = $sp->query($q, 'rows');
+    	$rows = $s->query($q, 'rows');
     	//print_r($rows);
-    	$err = $sp->getErrors();
+    	$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -63,20 +61,18 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
               "Matching Literals with Language Tags doesn't work."
             );
             
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     	    			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
-					 
-		$sp = new FourStore_StorePlus($EndPointSparql,false,$modeDebug);
 		
 		$q = $prefixSparql." \n
 			INSERT DATA {  
 				GRAPH <".$graph1."> {    
 				a:A1 b:Name \"Test\"@en.  
     		}}";
-		$res = $sp->query($q,'raw' );
-		$err = $sp->getErrors();
+		$res = $s->query($q,'raw' );
+		$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -85,9 +81,9 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
 		
     	$q = $prefixSparql." \n select * where {  
 				GRAPH <".$graph1."> {?a ?b \"Test\"@en .}} ";
-    	$rows = $sp->query($q, 'rows');
+    	$rows = $s->query($q, 'rows');
     	//print_r($rows);
-    	$err = $sp->getErrors();
+    	$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -100,12 +96,10 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
     
     public function testHackLanguage()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
-					 
-		$sp = new FourStore_StorePlus($EndPointSparql,false,$modeDebug);
 		
 		$graphfr = "http://fr.example.com/test";
 		$graphen = "http://en.example.com/test";
@@ -129,9 +123,9 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
     	?id  <http://www.w3.org/2002/07/owl#sameas> ?idfr . 
 	    	{GRAPH <".$graphfr."> {?idfr b:Name ?c .}}
 	    } ";
-    	$rows = $sp->query($q, 'rows');
+    	$rows = $s->query($q, 'rows');
     	//print_r($rows);
-    	$err = $sp->getErrors();
+    	$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -145,9 +139,9 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
     	{?idfr  <http://www.w3.org/2002/07/owl#sameas> ?id . }}.
 	    	{GRAPH <".$graphfr."> {?idfr b:Name ?c .}}
 	    } ";
-    	$rows = $sp->query($q, 'rows');
+    	$rows = $s->query($q, 'rows');
     	//print_r($rows);
-    	$err = $sp->getErrors();
+    	$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -162,12 +156,10 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
    
     public function testMatchingLiteralsWithDateTypes()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
-					 
-		$sp = new FourStore_StorePlus($EndPointSparql,false,$modeDebug);
 		
 		$prefixt = $prefixTurtle . "\n@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n";
 		$prefix = $prefixSparql . "\n PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n";
@@ -189,8 +181,8 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
 			a:id5 b:date ?date1.
 			a:id6 b:date ?date2.
 		 FILTER ( ?date1 < ?date2 ) .}}";
-		$res = $sp->query($q,'raw');		
-		$err = $sp->getErrors();
+		$res = $s->query($q,'raw');		
+		$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -201,8 +193,8 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
 			a:id5 b:date ?date1.
 			a:id6 b:date ?date2.
 		 FILTER ( ?date1 > ?date2 ) .}}";
-		$res = $sp->query($q,'raw');		
-		$err = $sp->getErrors();
+		$res = $s->query($q,'raw');		
+		$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -214,8 +206,8 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
 			a:id7 b:date ?date1.
 			a:id8 b:date ?date2.
 		 FILTER ( ?date1 < ?date2 ) .}}";
-		$res = $sp->query($q,'raw');		
-		$err = $sp->getErrors();
+		$res = $s->query($q,'raw');		
+		$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -226,8 +218,8 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
 			a:id7 b:date ?date1.
 			a:id8 b:date ?date2.
 		 FILTER ( ?date1 > ?date2 ) .}}";
-		$res = $sp->query($q,'raw');		
-		$err = $sp->getErrors();
+		$res = $s->query($q,'raw');		
+		$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -238,8 +230,8 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
 			a:id7 b:date ?date1.
 			a:id6 b:date ?date2.
 		 FILTER ( ?date1 < ?date2 ) .}}";
-		$res = $sp->query($q,'raw');		
-		$err = $sp->getErrors();
+		$res = $s->query($q,'raw');		
+		$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -250,8 +242,8 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
 			a:id7 b:date ?date1.
 			a:id6 b:date ?date2.
 		 FILTER ( ?date1 > ?date2 ) .}}";
-		$res = $sp->query($q,'raw');		
-		$err = $sp->getErrors();
+		$res = $s->query($q,'raw');		
+		$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -262,8 +254,8 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
 		$q = $prefix."\n ASK WHERE { GRAPH <".$graph1."> { 
 			a:id7 b:date ?date.
 		 FILTER ( ?date <  \"2010-03-09T00:00:01Z\"^^xsd:dateTime ) .}}";
-		$res = $sp->query($q,'raw');		
-		$err = $sp->getErrors();
+		$res = $s->query($q,'raw');		
+		$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -283,12 +275,10 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
               "Matching Literals with type String."
             );
             
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
-					 
-		$sp = new FourStore_StorePlus($EndPointSparql,false,$modeDebug);
 		
 		$prefix = $prefixSparql . "\n PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n";
 
@@ -298,15 +288,15 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
 				a:A b:Name \"Test\"^^xsd:string .  
 				a:A b:Name \"Test2\" .  
     		}}";
-		$res = $sp->query($q );
+		$res = $s->query($q );
 		//print_r($res);
 		$this->assertEquals(2, $s->count($graph1));		
 		
     	$q = $prefix." \n select * where {  
 				GRAPH <".$graph1."> {?a ?b \"Test\"^^xsd:string.}} ";
-    	$rows = $sp->query($q, 'rows');
+    	$rows = $s->query($q, 'rows');
     	//print_r($rows);
-    	$err = $sp->getErrors();
+    	$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -315,9 +305,9 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
 		
     	$q = $prefix." \n select * where {  
 				GRAPH <".$graph1."> {?a ?b \"Test2\"^^xsd:string.}} ";
-    	$rows = $sp->query($q, 'rows');
+    	$rows = $s->query($q, 'rows');
     	//print_r($rows);
-    	$err = $sp->getErrors();
+    	$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -326,9 +316,9 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
 		
     	$q = $prefix." \n select * where {  
 				GRAPH <".$graph1."> {?a ?b \"Test\".}} ";
-    	$rows = $sp->query($q, 'rows');
+    	$rows = $s->query($q, 'rows');
     	//print_r($rows);
-    	$err = $sp->getErrors();
+    	$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -337,9 +327,9 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
 		
     	$q = $prefix." \n select * where {  
 				GRAPH <".$graph1."> {?a ?b \"Test2\".}} ";
-    	$rows = $sp->query($q, 'rows');
+    	$rows = $s->query($q, 'rows');
     	//print_r($rows);
-    	$err = $sp->getErrors();
+    	$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -352,12 +342,11 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
     
   public function testSelectDistinct()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
-					 		
-    	$sp = new FourStore_StorePlus($EndPointSparql,false,$modeDebug);
+    	
 		$prefix = $prefixSparql . "\n PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n";
 		
 		$q = $prefix." \n
@@ -370,16 +359,16 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
 					a:A3 b:Name2 \"t3\"^^xsd:String.
 					a:A4 b:Name2 \"t4\"^^xsd:String. 
     		}}";
-		$res = $sp->query($q );
+		$res = $s->query($q );
 		//print_r($res);
 		$this->assertEquals(6, $s->count($graph1));	
 		
 		$q = $prefix."\n select  * where {?x b:Name ?name. ?x b:Name2 ?name2. } ";
 
     	
-    	$rows = $sp->query($q, 'rows');
+    	$rows = $s->query($q, 'rows');
     	print_r($rows);
-    	$err = $sp->getErrors();
+    	$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -392,16 +381,16 @@ class FourStoreMatchingTest extends PHPUnit_Framework_TestCase
     }
     
  	private function checkIfInitialState($s){
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
 		$this->assertEquals(0, $s->count($graph1));
 		$this->assertEquals(0, $s->count($graph2));
 		$this->assertEquals(0, $s->count());
     } 
     
     private function printAll(){
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-		$sp = new FourStore_StorePlus($EndPointSparql,false,$modeDebug);
+		$sp = new EndpointPlus($EndPoint4store,false,$modeDebug);
 	
 		$q = $prefixSparql." \n select * where {  
 				GRAPH ?graph {?o ?p ?v .}} ";

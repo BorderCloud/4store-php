@@ -1,11 +1,11 @@
 <?php
 /**
- * @version 0.1.0.0
+ * @version 0.4.0.0
  * @package Bourdercloud/4store-PHP
- * @copyright (c) 2010 Bourdercloud.com
+ * @copyright (c) 2011 Bourdercloud.com
  * @author Karima Rafes <karima.rafes@bordercloud.com>
 
- Copyright (c) 2010 Bourdercloud.com
+ Copyright (c) 2011 Bourdercloud.com
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -26,9 +26,8 @@
  THE SOFTWARE.
  */
 
-require_once(dirname(__FILE__) . '/../arc2/ARC2.php');
-require_once("FourStore_StorePlus.php");
-require_once("FourStore_NTriplesSerializer.php");
+require_once("Endpoint.php");
+
 class SparqlTools {
 	
 	/*
@@ -56,12 +55,12 @@ class SparqlTools {
 	 */
 	static function deleteTriples($iri,$graph,$endpoint){
 			/* Serializer instantiation */			
-			$ser = new FourStore_NTriplesSerializer();
-			$sp_readonly = @ new FourStore_StorePlus($endpoint);	
+			$ser = ARC2::getNTriplesSerializer();
+			$sp_readonly = new Endpoint($endpoint);	
 			//DELETE OLD TRIPLES WITH THE SUBJECT $uri
 			$q = "select * where {GRAPH <".$graph."> {<".$iri.">  ?p ?o.}} ";
 			
-	    	$oldTriples = @$sp_readonly->query($q,'rows');
+	    	$oldTriples = $sp_readonly->query($q,'rows');
 	    	$err = $sp_readonly->getErrors();
 		    if ($err) {
 			    throw new Exception(self::buildMessage($err));
@@ -74,12 +73,12 @@ class SparqlTools {
 				}
 				/* Serialize a triples array */
 				$docd = $ser->getSerializedTriples($oldTriples,1);
-		    	$sp = new FourStore_StorePlus($endpoint,false);
+		    	$sp = new Endpoint($endpoint,false);
 				$q = "DELETE DATA {  
 							GRAPH <".$graph."> {    
 							$docd 
 			    		}}";
-				$res = @$sp->query($q,'raw' );
+				$res = $sp->query($q,'raw' );
 				$err = $sp->getErrors();
 			    if ($err ) {
 			    	throw new Exception(self::buildMessage($err));
@@ -100,13 +99,13 @@ class SparqlTools {
 	 * @access public
 	 */
 	static function insert($turtle,$graph,$endpoint){
-	    	$sp_write = new FourStore_StorePlus($endpoint,false);
+	    	$sp_write = new Endpoint($endpoint,false);
 			$q = "INSERT DATA {  
 						GRAPH <".$graph."> {    
 						$turtle
 		    		}}";
 						
-			$res = @$sp_write->query($q,'raw');
+			$res = $sp_write->query($q,'raw');
 			$err = $sp_write->getErrors();
 		    if ($err) {
 			    throw new Exception(self::buildMessage($err));
@@ -141,21 +140,21 @@ class SparqlTools {
 		self::deleteTriples($uri,$graph,$endpoint);
 		
 		//READ NEW TRIPLES WITH THE SUBJECT $uri
-		$parser = @ARC2::getRDFXMLParser();
+		$parser = ARC2::getRDFXMLParser();
 		@$parser->parse($uri);
 		$err = $parser->getErrors();
 	    if ($err ) {
 		    throw new Exception(self::buildMessage($err));
 		}
-		$newTriples = @$parser->getTriples();
+		$newTriples = $parser->getTriples();
 		for ($i = 0, $i_max = count($newTriples); $i < $i_max; $i++) {
 			if($uri != $newTriples[$i]['s'])
 		  		unset($newTriples[$i]);
 		}
 		/* Serializer instantiation */			
-		$ser =@ new FourStore_NTriplesSerializer();
+		$ser = new FourStore_NTriplesSerializer();
 		/* Serialize a triples array */
-		$doc = @$ser->getSerializedTriples($newTriples,1);
+		$doc = $ser->getSerializedTriples($newTriples,1);
 		self::insert($doc,$graph,$endpoint);
 	} 
 	

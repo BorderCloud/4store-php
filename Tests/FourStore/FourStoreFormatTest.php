@@ -1,17 +1,16 @@
 <?php
 require_once 'PHPUnit/Framework.php';
 
-require_once (dirname(__FILE__) . '/../../lib/FourStore/FourStore_NTriplesSerializer.php');
-require_once (dirname(__FILE__) . '/../../lib/FourStore/FourStore_StorePlus.php');
-require_once (dirname(__FILE__) . '/../../lib/FourStore/SparqlTools.php');
+require_once (dirname(__FILE__) . '/../../lib/4store/Endpoint.php');
+require_once (dirname(__FILE__) . '/../../lib/4store/SparqlTools.php');
  
 class FourStoreFormatTest extends PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {       
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,$modeDebug);
     	$r = $s->delete($graph1); 
     	$r = $s->delete($graph2); 
     	$r = $s->delete("default:");     
@@ -19,9 +18,9 @@ class FourStoreFormatTest extends PHPUnit_Framework_TestCase
     
    public function testSelectSerializeAndDelete()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
 		$r = $s->set($graph1, 
 					 $prefixTurtle . "\n@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -32,12 +31,10 @@ class FourStoreFormatTest extends PHPUnit_Framework_TestCase
 					");
 					 		
 		$q = $prefixSparql. "\n select * where {GRAPH <".$graph1."> {a:A ?p ?o.}} ";
-
-    	$sp = new FourStore_StorePlus($EndPointSparql,true,$modeDebug);
     	
-    	$triples = $sp->query($q,'rows');
+    	$triples = $s->query($q,'rows');
     	
-    	$err = $sp->getErrors();
+    	$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -49,21 +46,18 @@ class FourStoreFormatTest extends PHPUnit_Framework_TestCase
 		}
     	//print_r($triples);
     	/* Serializer instantiation */
-		$ser = new FourStore_NTriplesSerializer();
+		$ser = ARC2::getNTriplesSerializer();
 			
 		/* Serialize a triples array */
 		$docd = $ser->getSerializedTriples($triples,1);
-		
-		//print_r($docd);
-    	$sp = new FourStore_StorePlus($EndPointSparql,false,$modeDebug);
-		
+				
 		$q = "DELETE DATA {  
 				GRAPH <".$graph1."> {    
 				$docd 
     		}}";
 		//print_r($q);
-		$res = $sp->query($q,'raw' );
-		$err = $sp->getErrors();
+		$res = $s->query($q,'raw' );
+		$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -75,15 +69,15 @@ class FourStoreFormatTest extends PHPUnit_Framework_TestCase
     
     public function testValueStringUTF8()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
     	
     	$uri = "http://fr.test2.daria/wiki/Spécial:URIResolver/Accueil";
     	$turtle ='<http://fr.test2.daria/wiki/Spécial:URIResolver/Accueil> <http://semantic-mediawiki.org/swivt/1.0#wikiPageModificationDate> "2010-08-16T17:01:33"^^<http://www.w3.org/2001/XMLSchema#dateTime> .';
-    	SparqlTools::insert($turtle,$graph1,$EndPointSparql);
-    	SparqlTools::deleteTriples($uri,$graph1,$EndPointSparql);	
+    	SparqlTools::insert($turtle,$graph1,$EndPoint4store);
+    	SparqlTools::deleteTriples($uri,$graph1,$EndPoint4store);	
 		
 		$this->assertEquals(0, $s->count($graph1));		
 		
@@ -93,16 +87,16 @@ class FourStoreFormatTest extends PHPUnit_Framework_TestCase
         
     public function testValueStringUTF8WithQuote()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
     	
     	$uri = "http://fr.test2.daria/wiki/Spécial:URIResolver/Accueil";
     	$coord = addcslashes("40° 42' 42\" N, 74° 0' 44\" O",'\t\n\r\b\f\"\'\\') ;
     	$turtle ="<http://fr.test2.daria/wiki/Spécial:URIResolver/Accueil> <http://fr.test2.daria/wiki/Spécial:URIResolver/Attribut:Coordonnée> \"".$coord."\" .";
-    	SparqlTools::insert($turtle,$graph1,$EndPointSparql);
-    	SparqlTools::deleteTriples($uri,$graph1,$EndPointSparql);	
+    	SparqlTools::insert($turtle,$graph1,$EndPoint4store);
+    	SparqlTools::deleteTriples($uri,$graph1,$EndPoint4store);	
 		
 		$this->assertEquals(0, $s->count($graph1));		
 		
@@ -112,16 +106,16 @@ class FourStoreFormatTest extends PHPUnit_Framework_TestCase
     
     public function testIRIUTF8WithQuote()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
     	
     	$uri = "http://fr.test2.daria/wiki/Spécial:URIResolver/Tête_d'or";
     	$turtle ="<http://fr.test2.daria/wiki/Spécial:URIResolver/Tête_d'or> <http://fr.test2.daria/wiki/Spécial:URIResolver/Attribut:Truc> \"test\" .";
-    	SparqlTools::insert($turtle,$graph1,$EndPointSparql);
+    	SparqlTools::insert($turtle,$graph1,$EndPoint4store);
     	$this->assertEquals(1, $s->count($graph1));
-    	SparqlTools::deleteTriples($uri,$graph1,$EndPointSparql);	
+    	SparqlTools::deleteTriples($uri,$graph1,$EndPoint4store);	
 		
 		$this->assertEquals(0, $s->count($graph1));		
 		
@@ -132,29 +126,28 @@ class FourStoreFormatTest extends PHPUnit_Framework_TestCase
     
     public function testSelectIRIUTF8WithQuote()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
     	
     	$uri = "http://fr.test2.daria/wiki/Spécial:URIResolver/Tête_d'or";
     	$turtle ="<http://fr.test2.daria/wiki/Spécial:URIResolver/Tête_d'or> <http://fr.test2.daria/wiki/Spécial:URIResolver/Attribut:Truc> \"test\" .";
-    	SparqlTools::insert($turtle,$graph1,$EndPointSparql);
+    	SparqlTools::insert($turtle,$graph1,$EndPoint4store);
     	$this->assertEquals(1, $s->count($graph1));
     	
     	$q = "select *  where {<".$uri."> ?y ?z.}";
-    	$sp = new FourStore_StorePlus($EndPointSparql);
     	
-    	$rows = $sp->query($q, 'rows');
+    	$rows = $s->query($q, 'rows');
     	print_r($rows);
-    	$err = $sp->getErrors();
+    	$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
 		}
     	$this->assertEquals(1,count($rows));    	
     	
-    	SparqlTools::deleteTriples($uri,$graph1,$EndPointSparql);	
+    	SparqlTools::deleteTriples($uri,$graph1,$EndPoint4store);	
 		
 		$this->assertEquals(0, $s->count($graph1));		
 		
@@ -174,7 +167,7 @@ class FourStoreFormatTest extends PHPUnit_Framework_TestCase
     }
     
     private function checkIfInitialState($s){
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
 		$this->assertEquals(0, $s->count($graph1));
 		$this->assertEquals(0, $s->count($graph2));
 		$this->assertEquals(0, $s->count());

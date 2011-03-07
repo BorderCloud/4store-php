@@ -1,12 +1,11 @@
 <?php
-require '../lib/FourStore/FourStore_StorePlus.php';
+require '../lib/4store/Endpoint.php';
 
-	$endpoint ="http://dbpedia.org/sparql";
+	$endpoint ="http://dbpedia.org/";
 	
 // READ ONLY  ******************************************
 	
-	//put argument false to write
-	$sp_readonly = new FourStore_StorePlus($endpoint);
+	$sp_readonly = new Endpoint($endpoint);
 
     $q = "select *  where {?x ?y ?z.} LIMIT 5";
     $rows = $sp_readonly->query($q, 'rows');

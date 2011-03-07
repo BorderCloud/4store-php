@@ -2,7 +2,7 @@
 
 
 require 'init4Store.php';
-require '../lib/FourStore/FourStore_StorePlus.php';
+require '../lib/4store/Endpoint.php';
 
 //remove this line in your code
 //start4store();
@@ -13,7 +13,8 @@ require '../lib/FourStore/FourStore_StorePlus.php';
 // WRITE in 4STORE ******************************************
 
 	//put argument false to write
-	$sp_write = new FourStore_StorePlus($endpoint,false );
+	$readonly = false;
+	$sp_write = new Endpoint('http://localhost:8080/',$readonly);
 	
 	echo "\nInsert :";
 	$q = " 
@@ -53,7 +54,8 @@ require '../lib/FourStore/FourStore_StorePlus.php';
 // READ ONLY  ******************************************
 	
 	//put argument false to write
-	$sp_readonly = new FourStore_StorePlus($endpoint);
+	$readonly = true;
+	$sp_readonly = new Endpoint('http://localhost:8080/',$readonly);
 	
 	echo "\nPrint :";
     $q = "select * where { GRAPH <".$graph."> {?x ?y ?z.}} ";

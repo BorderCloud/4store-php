@@ -8,6 +8,6 @@ clean:
 
 importarc2:
 		rm -rf lib/arc2
-		cp -rv ../arc2 lib/ 
+		cp -rv ../arc2/lib/arc2 lib/ 
 		rm -rf lib/arc2/.g*
 

@@ -1,23 +1,23 @@
 <?php
 require_once 'PHPUnit/Framework.php';
 
-require_once (dirname(__FILE__) . '/../../lib/FourStore/FourStore_Store.php');
+require_once (dirname(__FILE__) . '/../../lib/4store/Endpoint.php');
  
 class FourStoreDataTest extends PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {       
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$r = $s->delete($graph1); 
     	$r = $s->delete($graph2);  
     }
 
     public function testSet()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
 		$r = $s->set($graph1, 
 					 $prefixTurtle ."\n
@@ -43,8 +43,8 @@ class FourStoreDataTest extends PHPUnit_Framework_TestCase
      */
     public function testDelete()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	
     	$r = $s->set($graph1, 
 					 $prefixTurtle ."\n
@@ -64,8 +64,8 @@ class FourStoreDataTest extends PHPUnit_Framework_TestCase
      */
     public function testAdd()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	
     	$this->checkIfInitialState($s);
     	
@@ -98,7 +98,7 @@ class FourStoreDataTest extends PHPUnit_Framework_TestCase
     }
   
     private function checkIfInitialState($s){
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
 		$this->assertEquals(0, $s->count($graph1));
 		$this->assertEquals(0, $s->count($graph2));
 		$this->assertEquals(0, $s->count());

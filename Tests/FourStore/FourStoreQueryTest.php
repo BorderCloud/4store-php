@@ -1,15 +1,15 @@
 <?php
 require_once 'PHPUnit/Framework.php';
 
-require_once (dirname(__FILE__) . '/../../lib/FourStore/FourStore_StorePlus.php');
+require_once (dirname(__FILE__) . '/../../lib/4store/Endpoint.php');
  
 class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {       
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$r = $s->delete($graph1); 
     	$r = $s->delete($graph2); 
     	$r = $s->delete("default:");     
@@ -17,9 +17,9 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 
     public function testSelect()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
 		$r = $s->set($graph1, 
 					 $prefixTurtle ."\n
@@ -29,12 +29,10 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 					");
 					 		
 		$q = 'select * where {?x ?y ?z.} ';
-
-    	$sp = new FourStore_StorePlus($EndPointSparql,true,$modeDebug);
     	
-    	$rows = $sp->query($q, 'rows');
+    	$rows = $s->query($q, 'rows');
     	//print_r($rows);
-    	$err = $sp->getErrors();
+    	$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -46,9 +44,9 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
     
     public function testSelectDistinct()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
 		$r = $s->set($graph1, 
 					 $prefixTurtle ."\n
@@ -61,12 +59,10 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 					");
 					 		
 		$q =  $prefixSparql ."\n select  * where {?x b:Name ?name. ?x b:Name2 ?name2. } ";
-
-    	$sp = new FourStore_StorePlus($EndPointSparql,true,$modeDebug);
     	
-    	$rows = $sp->query($q, 'rows');
+    	$rows = $s->query($q, 'rows');
     	print_r($rows);
-    	$err = $sp->getErrors();
+    	$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -81,9 +77,9 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
     
     public function testCount()
     {
-    	global $modeSkipProblem,$EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $modeSkipProblem,$EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
 		$r = $s->set($graph1, 
 					 $prefixTurtle ."\n
@@ -93,12 +89,10 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 					");
 					 
 		$q = 'select (count(?x) AS ?count) where {?x ?y ?z.} ';
-
-    	$sp = new FourStore_StorePlus($EndPointSparql,true,$modeDebug);
-    	
-    	$rows = $sp->query($q, 'rows');
+  	
+    	$rows = $s->query($q, 'rows');
     	//print_r($rows);
-    	$err = $sp->getErrors();
+    	$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -112,9 +106,9 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
     
     public function testCountBug()
     {        
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
 		$r = $s->set($graph1, 
 					 $prefixTurtle ."\n
@@ -124,12 +118,10 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 					");
 					    	
 		$q = 'select (count(*) AS ?count) where {?x ?y ?z.} ';
-
-    	$sp = new FourStore_StorePlus($EndPointSparql,$modeDebug);
     	
-    	$rows = $sp->query($q, 'rows');
+    	$rows = $s->query($q, 'rows');
     	//print_r($rows);
-    	$err = $sp->getErrors();
+    	$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -143,9 +135,9 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 
     public function testAsk()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
 		$r = $s->set($graph1, 
 					 $prefixTurtle ."\n
@@ -153,15 +145,13 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 					a:A b:Name \"Test3\".
 					a:A b:Name \"Test4\".
 					");
-					 
-		$sp = new FourStore_StorePlus($EndPointSparql,$modeDebug);
 		
 		$q = $prefixSparql."\n ASK WHERE { GRAPH <".$graph1."> { a:A b:Name \"Test2\" .}}";
-		$res = $sp->query($q,'raw');
+		$res = $s->query($q,'raw');
 		$this->assertTrue($res);
 		
 		$q = $prefixSparql."\n ASK WHERE { GRAPH <".$graph1."> { a:A b:Name \"NON\" .}}";
-		$res = $sp->query($q,'raw');
+		$res = $s->query($q,'raw');
 		$this->assertFalse($res);
 		
     	$r = $s->delete($graph1);    	
@@ -170,9 +160,9 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
     
  	public function testInsertWithoutParser()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
 		$r = $s->set($graph1, 
 					 $prefixTurtle ."\n
@@ -189,15 +179,14 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 		//print_r($res);
 		$this->assertEquals(3, $s->count($graph1));		
 		
-		$sp = new FourStore_StorePlus($EndPointSparql,$modeDebug);
 		$q = $prefixSparql."\n ASK WHERE { GRAPH <".$graph1."> { a:A b:Name \"Test4\" .}}";
-		$res = $sp->query($q,'raw');
+		$res = $s->query($q,'raw');
 		$this->assertTrue($res);
 		$q = $prefixSparql."\n ASK WHERE { GRAPH <".$graph1."> { a:A b:Name \"Test3\" .}}";
-		$res = $sp->query($q,'raw');
+		$res = $s->query($q,'raw');
 		$this->assertTrue($res);
 		$q = $prefixSparql."\n ASK WHERE { GRAPH <".$graph1."> { a:A b:Name \"Test2\" .}}";
-		$res = $sp->query($q,'raw');
+		$res = $s->query($q,'raw');
 		$this->assertTrue($res);
 		
     	$r = $s->delete($graph1);    	
@@ -207,9 +196,9 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
  
  	public function testDeleteWithoutParser()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
 		$r = $s->set($graph1, 
 					 $prefixTurtle ."\n
@@ -227,15 +216,14 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 		//print_r($res);
 		$this->assertEquals(2, $s->count($graph1));		
 		
-		$sp = new FourStore_StorePlus($EndPointSparql,$modeDebug);
 		$q = $prefixSparql."\n ASK WHERE { GRAPH <".$graph1."> { a:A b:Name \"Test4\" .}}";
-		$res = $sp->query($q,'raw');
+		$res = $s->query($q,'raw');
 		$this->assertTrue($res);
 		$q = $prefixSparql."\n ASK WHERE { GRAPH <".$graph1."> { a:A b:Name \"Test3\" .}}";
-		$res = $sp->query($q,'raw');
+		$res = $s->query($q,'raw');
 		$this->assertTrue($res);
 		$q = $prefixSparql."\n ASK WHERE { GRAPH <".$graph1."> { a:A b:Name \"Test2\" .}}";
-		$res = $sp->query($q,'raw');
+		$res = $s->query($q,'raw');
 		$this->assertFalse($res);
 		
     	$r = $s->delete($graph1);    	
@@ -244,9 +232,9 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
     
     public function testInsertDefaultGraph()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
 		
 		$q = $prefixSparql." \n
@@ -266,9 +254,9 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
     
     public function testDeleteDefaultGraph()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
 		
 		$r = $s->set("default:", 
@@ -285,27 +273,25 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 		$res = $s->queryUpdate($q );
 		//print_r($res);
 		$this->assertEquals(2, $s->count());		
-		
-		$sp = new FourStore_StorePlus($EndPointSparql);
-		
+				
 		//Security block without graph
 		$q = $prefixSparql." \n
 			DELETE DATA {     
-				GRAPH <".$graph1."> {a:A b:Name \"Test4\".} 
+				 a:A b:Name \"Test4\".
     		}";
-		$res = $sp->query($q,'raw' );
-		$err = $sp->getErrors();
-		//print_r($err);
+		$res = $s->query($q,'raw' );
+		$err = $s->getErrors();
+		print_r($err);
 	    $this->assertTrue(count($err)> 0);
 	    
 		$q = $prefixSparql."\n ASK WHERE{ a:A b:Name \"Test4\" .}";
-		$res = $sp->query($q,'raw');
+		$res = $s->query($q,'raw');
 		$this->assertTrue($res);
 		$q = $prefixSparql."\n ASK WHERE  { a:A b:Name \"Test3\" .}";
-		$res = $sp->query($q,'raw');
+		$res = $s->query($q,'raw');
 		$this->assertTrue($res);
 		$q = $prefixSparql."\n ASK WHERE  { a:A b:Name \"Test2\" .}";
-		$res = $sp->query($q,'raw');
+		$res = $s->query($q,'raw');
 		$this->assertFalse($res);
 		
     	$r = $s->delete("default:");    	
@@ -314,22 +300,20 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
     
     public function testInsert()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
-					 
-		$sp = new FourStore_StorePlus($EndPointSparql,false,$modeDebug);
 		
-		$q = $prefixSparql." \n
+		$q = $prefixSparql." 
 			INSERT DATA {  
 				GRAPH <".$graph1."> {    
 				a:A b:Name \"Test2\" .   
 				a:A b:Name \"Test3\" .   
 				a:A b:Name \"Test4\" .  
     		}}";
-		$res = $sp->query($q,'raw' );
-		$err = $sp->getErrors();
+		$res = $s->query($q,'raw' );
+		$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -344,9 +328,9 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
     
    public function testDelete()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	$s = new Endpoint($EndPoint4store,false,$modeDebug);
     	$this->checkIfInitialState($s);
 		$r = $s->set($graph1, 
 					 $prefixTurtle ."\n
@@ -354,16 +338,14 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 					a:A b:Name \"Test2\" .    
 					a:A b:Name \"Test3\" . 
 					");
-    	
-		$sp = new FourStore_StorePlus($EndPointSparql,false,$modeDebug);
 		
-		$q = $prefixSparql." \n
+		$q = $prefixSparql." 
 			DELETE DATA {  
 				GRAPH <".$graph1."> {    
 				a:A b:Name \"Test2\" . 
     		}}";
-		$res = $sp->query($q,'raw' );
-		$err = $sp->getErrors();
+		$res = $s->query($q,'raw' );
+		$err = $s->getErrors();
 	    if ($err) {
 	    	print_r($err);
 	    	$this->assertTrue(false);
@@ -372,26 +354,26 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 		
 		$this->assertEquals(2, $s->count($graph1));		
 		
-		$sp = new FourStore_StorePlus($EndPointSparql,$modeDebug);
 		$q = $prefixSparql."\n ASK WHERE { GRAPH <".$graph1."> { a:A b:Name \"Test4\" .}}";
-		$res = $sp->query($q,'raw');
+		$res = $s->query($q,'raw');
 		$this->assertTrue($res);
 		$q = $prefixSparql."\n ASK WHERE { GRAPH <".$graph1."> { a:A b:Name \"Test3\" .}}";
-		$res = $sp->query($q,'raw');
+		$res = $s->query($q,'raw');
 		$this->assertTrue($res);
 		$q = $prefixSparql."\n ASK WHERE { GRAPH <".$graph1."> { a:A b:Name \"Test2\" .}}";
-		$res = $sp->query($q,'raw');
+		$res = $s->query($q,'raw');
 		$this->assertFalse($res);
 		
     	$r = $s->delete($graph1);    	
     	$this->checkIfInitialState($s);
     }
     
+    
 //    public function testSelectDBpedia()
 //    {
-//    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+//    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
 //		$q = 'select *  where {?x ?y ?z.} LIMIT 5';
-//    	$sp = new FourStore_StorePlus("http://dbpedia.org/sparql");
+//    	$sp = new Endpoint("http://dbpedia.org/",true);
 //    	
 //    	$rows = $sp->query($q, 'rows');
 //    	//print_r($rows);
@@ -404,7 +386,7 @@ class FourStoreQueryTest extends PHPUnit_Framework_TestCase
 //    }
     
     private function checkIfInitialState($s){
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
 		$this->assertEquals(0, $s->count($graph1));
 		$this->assertEquals(0, $s->count($graph2));
 		$this->assertEquals(0, $s->count());

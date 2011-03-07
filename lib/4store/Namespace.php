@@ -1,14 +1,11 @@
 <?php
 /**
- * @version 0.1.0.0
+ * @version 0.4.0.0
  * @package Bourdercloud/4store-PHP
- * @copyright (c) 2010 Bourdercloud.com
+ * @copyright (c) 2011 Bourdercloud.com
  * @author Karima Rafes <karima.rafes@bordercloud.com>
- * 
- * This file is a fork of project  : http://github.com/moustaki/4store-php
- * @author Yves Raimond
 
- Copyright (c) 2010 Bourdercloud.com
+ Copyright (c) 2011 Bourdercloud.com
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal

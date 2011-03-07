@@ -1,24 +1,24 @@
 <?php
 require_once 'PHPUnit/Framework.php';
 
-require_once (dirname(__FILE__) . '/../../lib/FourStore/FourStore_Store.php');
+require_once (dirname(__FILE__) . '/../../lib/4store/Endpoint.php');
  
 class FourStoreOfflineTest extends PHPUnit_Framework_TestCase
 {
     public function testIsOffline()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	$s = new Endpoint($EndPoint4store,true,$modeDebug);
 		$this->assertFalse($s->check());
     }
         
     public function testSelectOffline()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
 					 		
 		$q = 'select * where {?x ?y ?z.} ';
 
-    	$sp = new FourStore_StorePlus($EndPointSparql,true,$modeDebug);
+    	$sp = new Endpoint($EndPoint4store,true,$modeDebug);
     	$rows = $sp->query($q, 'rows');
     	//print_r($rows);
     	$err = $sp->getErrors();
@@ -30,9 +30,9 @@ class FourStoreOfflineTest extends PHPUnit_Framework_TestCase
     
    public function testInsertWhenOffline()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
     			
-		$sp = new FourStore_StorePlus($EndPointSparql,false,$modeDebug);
+		$sp = new Endpoint($EndPoint4store,false,$modeDebug);
 		$q = $prefixSparql." \n
 			INSERT DATA {  
 				GRAPH <".$graph1."> {    

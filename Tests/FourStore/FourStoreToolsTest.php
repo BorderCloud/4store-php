@@ -1,7 +1,7 @@
 <?php
 require_once 'PHPUnit/Framework.php';
 
-require_once (dirname(__FILE__) . '/../../lib/FourStore/FourStore_Store.php');
+require_once (dirname(__FILE__) . '/../../lib/4store/Endpoint.php');
  
 class FourStoreToolsTest extends PHPUnit_Framework_TestCase
 {
@@ -13,8 +13,8 @@ class FourStoreToolsTest extends PHPUnit_Framework_TestCase
     
     public function testCheck()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	$s = new Endpoint($EndPoint4store,true,$modeDebug);
 		$this->assertTrue($s->check());
     }
     
@@ -23,9 +23,8 @@ class FourStoreToolsTest extends PHPUnit_Framework_TestCase
      */
     public function testCount()
     {
-    	global $EndPointSparql,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
-    	$s = new FourStore_Store($EndPointSparql,$modeDebug);
+    	global $EndPoint4store,$modeDebug,$prefixSparql,$prefixTurtle,$graph1,$graph2;
+    	$s = new Endpoint($EndPoint4store,true,$modeDebug);
 		$this->assertEquals(0, $s->count($graph1));
     }
-   
 }
