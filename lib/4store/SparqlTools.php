@@ -38,7 +38,7 @@ class SparqlTools {
 	 */
 	static function deleteGraph($graph,$endpoint){
 		//FIXME Not sparql for 4store
-		$s = new FourStore_Store($endpoint);
+		$s = new Endpoint($endpoint);
 		$r = $s->delete($graph);	
 		if (!$r) {
 			$msg = "Query delete Graph";
