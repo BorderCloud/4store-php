@@ -22,9 +22,9 @@ cd 4s
 export PKG_CONFIG_PATH=/usr/lib64/pkgconfig
 
 # install a 64-bit raptor from freshly extracted source
-wget http://download.librdf.org/source/raptor2-2.0.0.tar.gz
-tar xvzf raptor2-2.0.0.tar.gz
-cd raptor2-2.0.0
+wget http://download.librdf.org/source/raptor2-2.0.2.tar.gz
+tar xvzf raptor2-2.0.2.tar.gz
+cd raptor2-2.0.2
 ./autogen.sh
 ./configure --libdir=/usr/lib64
 make
@@ -33,16 +33,73 @@ make install
 
 # similarly for 64-bit rasqal
 cd ..
-wget http://download.librdf.org/source/rasqal-0.9.24.tar.gz
-tar xvzf rasqal-0.9.24.tar.gz 
-cd rasqal-0.9.24
+wget http://download.librdf.org/source/rasqal-0.9.25.tar.gz
+tar xvzf rasqal-0.9.25.tar.gz 
+cd rasqal-0.9.25
+
+
+////////////////////// Bug mpf_round 
+//info https://github.com/dajobe/rasqal/commit/c5126ea60f4556a402c6fb74f0edae04ddcb796b.patch
+//with vim or other fix the function rasqal_xsd_decimal_round
+vim  rasqal-0.9.25/src/rasqal_decimal.c 
+******************* after the patch the function rasqal_xsd_decimal_round
+int
+rasqal_xsd_decimal_round(rasqal_xsd_decimal* result, rasqal_xsd_decimal* a)
+{
+  int rc = 0;
+#ifdef RASQAL_DECIMAL_GMP
+  mpf_t b;
+  mpf_t c;
+#endif
+
+  rasqal_xsd_decimal_clear_string(result);
+
+#if defined(RASQAL_DECIMAL_C99) || defined(RASQAL_DECIMAL_NONE)
+  result->raw = round(a->raw);
+#endif
+#ifdef RASQAL_DECIMAL_MPFR
+  mpfr_round(result->raw, a->raw);
+#endif
+#ifdef RASQAL_DECIMAL_GMP
+  //////old mpf_round(result->raw, a->raw);
+  /* GMP has no mpf_round so use result := floor(a + 0.5) */
+  mpf_init2(b, a->precision_bits);
+  mpf_init2(c, a->precision_bits);
+
+  mpf_set_d(b, 0.5);
+  mpf_add(c, a->raw, b);
+  mpf_floor(result->raw, c);
+
+  mpf_clear(b);
+  mpf_clear(c);
+
+#endif
+/////////////////////////////////////
+
 ./autogen.sh 
 ./configure  '--enable-query-languages=sparql rdql laqrs'  --libdir=/usr/lib64 
 make  
 make check 
 make install 
 
-#import 4store
+cd..
+#You can import 4store From git or from Tarballs 
+#import 4store From git 
+git clone https://github.com/garlik/4store.git
+cd 4store
+./autogen.sh
+./make-tarball.sh
+#move the result
+cp 4store-v1.1.3-10-ge2a4b9d.tar.gz ../.
+cd ..
+tar xvzf 4store-v1.1.3-10-ge2a4b9d.tar.gz
+cd 4store-v1.1.3-10-ge2a4b9d
+./configure
+make
+make test
+make install
+
+#import 4store From Tarballs 
 cd ..
 wget http://4store.org/download/4store-v1.1.2.tar.gz		
 tar xvzf 4store-v1.1.2.tar.gz
