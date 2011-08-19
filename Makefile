@@ -7,7 +7,8 @@ clean:
 		4s-backend-destroy test
 
 importarc2:
-		rm -rf lib/arc2
-		cp -rv ../arc2/lib/arc2 lib/ 
-		rm -rf lib/arc2/.g*
+		pear channel-discover bordercloud.github.com/pear
+		pear install  bordercloud/arc2
 
+pear:
+		phing deploy

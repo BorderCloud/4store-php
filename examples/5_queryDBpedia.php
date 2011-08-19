@@ -1,5 +1,17 @@
 <?php
-require '../lib/4store/Endpoint.php';
+/** 
+ * @version 0.4.1
+ * @package Bourdercloud/PHP4store
+ * @copyright (c) 2011 Bourdercloud.com
+ * @author Karima Rafes <karima.rafes@bordercloud.com>
+ * @license http://www.opensource.org/licenses/mit-license.php
+ */
+
+/** 
+ * @ignore
+ */
+//require_once('php4store/Endpoint.php');
+require '../lib/php4store/Endpoint.php';
 
 	$endpoint ="http://dbpedia.org/";
 	

@@ -1,4 +1,16 @@
 <?php
+/** 
+ * @version 0.4.1
+ * @package Bourdercloud/PHP4store
+ * @copyright (c) 2011 Bourdercloud.com
+ * @author Karima Rafes <karima.rafes@bordercloud.com>
+ * @license http://www.opensource.org/licenses/mit-license.php
+ */
+
+/** 
+ * @ignore
+ */
+
 // DONT USE THIS FILE IN PRODUCTION, it's only to test the examples.
 $NameBackend = "bordercloudExample";
 
@@ -23,6 +35,9 @@ function start4store(){
 	print "********************END SETUP***********************\n";
 }
 
+/** 
+ * @ignore
+ */
 function stop4store(){
 	global $NameBackend;
 

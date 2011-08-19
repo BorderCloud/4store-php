@@ -1,29 +1,10 @@
 <?php
-/**
- * @version 0.4.0.0
- * @package Bourdercloud/4store-PHP
+/** 
+ * @version 0.4.1
+ * @package Bourdercloud/PHP4store
  * @copyright (c) 2011 Bourdercloud.com
  * @author Karima Rafes <karima.rafes@bordercloud.com>
-
- Copyright (c) 2011 Bourdercloud.com
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
+ * @license http://www.opensource.org/licenses/mit-license.php
  */
 
 /**
@@ -33,13 +14,17 @@
  * for getting data from url, setting referrer, credentials,
  * sending post data, managing cookies, etc.
  *
- * Samle usage:
+ * Sample usage:
+ * <code>
  * $curl = &new Curl_HTTP_Client();
  * $useragent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)";
  * $curl->set_user_agent($useragent);
  * $curl->store_cookies("/tmp/cookies.txt");
  * $post_data = array('login' => 'pera', 'password' => 'joe');
  * $html_data = $curl->send_post_data(http://www.foo.com/login.php, $post_data);
+ * </code>
+ * @ignore
+ * @package Bourdercloud/PHP4store
  */
 class Curl
 {

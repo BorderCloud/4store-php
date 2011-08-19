@@ -2,22 +2,61 @@
 
 Lib Sparql HTTP Client for 4Store around the native php lib.
 This version is building for basic http server without zend. 
-This is a fork of the version 4store-php by 
+This is a fork of the version 2009 4store-php by 
 Yves Raimond with Zend (http://github.com/moustaki/4store-php.git).
+
+== Documentation API ==
+
+http://bordercloud.github.com/pear/doc
+
+== Tutorial ==
+
+You can start to read the documentation of the class Endpoint.php
+
+== Install 4store-PHP ==
+ 
+sudo pear channel-discover bordercloud.github.com/pear
+sudo pear install  bordercloud/4sphp
+
+== Install 4Store ==
+ 
+see file INSTALL
+
+== Copy Sources and tests ==
+
+git clone http://github.com/BorderCloud/4store-php.git
+ 
+== Tutorial ==
+
+You can read the examples in the folder "examples".
+and execute : 
+php 4_query.php
+ 
+NB : clean4store.php and init4store.php is only there to help you. Don't use it in production !
+
+== Test the classes ==
+
+The MakeFile can clean your system (kill process 4store and destroy the kb test)
+and it can test.
+So, command line :
+make test
+
+NB : if "make test" blocked, to do a crtl^C and "make clean"
 
 == Contact ==
 
 If you have remarks, questions, or suggestions, please send them to
 karima.rafes@bordercloud.com. 
 
-== Sources ==
-git clone http://github.com/BorderCloud/4store-php.git
-
 == Release-Notes ==
 
+* V0.4.1 version 4store-php by Karima Rafes <karima.rafes@bordercloud.com>
+	- Insert build.xml of Phing with task deploy 
+	- Create channel 
+	
 * V0.4.0.0 version 4store-php by Karima Rafes <karima.rafes@bordercloud.com>
 	- Refactoring
-	- Use the lib arc2 Debug brodercloud (https://github.com/BorderCloud/arc2)
+	- Use the lib arc2 Debug bordercloud (https://github.com/BorderCloud/arc2)
 
 * V0.3.0.0 version 4store-php by Karima Rafes <karima.rafes@bordercloud.com>
 	- Use the last version of ARC2 (https://github.com/BorderCloud/arc2)
@@ -58,31 +97,5 @@ git clone http://github.com/BorderCloud/4store-php.git
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  
- == Install 4Store ==
- 
-see file INSTALL_4STORE
- 
-== Install Test ==
 
- You can execute test with PHPUnit 3.4.14, 
- Command line, for example :
- #For Fedora 13 :
- yum install php-phpunit
- 
-== Tutorial ==
-
-You can read the examples in the folder "examples".
-and execute : 
-php 4_query.php
- 
-NB : clean4store.php and init4store.php is only there to help you. Don't use it in production !
-
-== Test the classes ==
-
-The MakeFile can clean your system (kill process 4store and destroy the kb test)
-and it can test.
-So, command line :
-make test
-
-NB : if "make test" blocked, to do a crtl^C and "make clean"
 

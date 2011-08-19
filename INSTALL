@@ -1,18 +1,23 @@
-#	Copyright (c) 2010 Bourdercloud.com
-#
-#   The lib Bordercloud/4store-php use the branch delete (March 26, 2010) of project 4store 
-#	(http://github.com/garlik/4store)
-#
-#	This document is a draft, if you have remarks, questions, 
-#	or suggestions, please send them to karima.rafes@bordercloud.com. 
-#
-#	INSTALL 4STORE ####################################################
-#	Command lines :
+== Install only 4store-PHP ==
+ 
+sudo pear channel-discover bordercloud.github.com/pear
+sudo pear install  bordercloud/4sphp
+
+== Download sources of 4store-PHP & test  ==
+git clone http://github.com/BorderCloud/arc2.git
+
+== Install 4Store Server ==
+
+########## For Fedora/CentOS/RedHat
 yum install gcc glib2-devel libxml2-devel pcre-devel avahi avahi-devel avahi-glib-devel readline-devel ncurses-devel termcap libtermcap-devel expat-devel zlib-devel libtool automake flex gtk-doc bison php-phpunit-PHPUnit.noarch
 
-#for fedora, put this line "-A INPUT -m state --state NEW -m udp -p udp --dport 5353 -d 224.0.0.251 -j ACCEPT" in /etc/sysconfig/iptables
+#for fedora only, put this line "-A INPUT -m state --state NEW -m udp -p udp --dport 5353 -d 224.0.0.251 -j ACCEPT" in /etc/sysconfig/iptables
 # reload iptables (or reboot...)
 
+########## For Ubuntu
+sudo apt-get install automake libtool gtk-doc-tools flex bison libxml2-dev libglib2.0-dev libpcre3-dev avahi-daemon libavahi-client-dev libavahi-glib-dev libreadline-dev git-core
+
+########## For All
 # Prepare build of 4store :
 mkdir 4s
 cd 4s
@@ -22,9 +27,9 @@ cd 4s
 export PKG_CONFIG_PATH=/usr/lib64/pkgconfig
 
 # install a 64-bit raptor from freshly extracted source
-wget http://download.librdf.org/source/raptor2-2.0.2.tar.gz
-tar xvzf raptor2-2.0.2.tar.gz
-cd raptor2-2.0.2
+wget http://download.librdf.org/source/raptor2-2.0.4.tar.gz
+tar xvzf raptor2-2.0.4.tar.gz
+cd raptor2-2.0.4
 ./autogen.sh
 ./configure --libdir=/usr/lib64
 make
@@ -33,48 +38,10 @@ make install
 
 # similarly for 64-bit rasqal
 cd ..
-wget http://download.librdf.org/source/rasqal-0.9.25.tar.gz
-tar xvzf rasqal-0.9.25.tar.gz 
-cd rasqal-0.9.25
+wget http://download.librdf.org/source/rasqal-0.9.26.tar.gz
+tar xvzf rasqal-0.9.26.tar.gz
+cd rasqal-0.9.26
 
-
-////////////////////// Bug mpf_round 
-//info https://github.com/dajobe/rasqal/commit/c5126ea60f4556a402c6fb74f0edae04ddcb796b.patch
-//with vim or other fix the function rasqal_xsd_decimal_round
-vim  rasqal-0.9.25/src/rasqal_decimal.c 
-******************* after the patch the function rasqal_xsd_decimal_round
-int
-rasqal_xsd_decimal_round(rasqal_xsd_decimal* result, rasqal_xsd_decimal* a)
-{
-  int rc = 0;
-#ifdef RASQAL_DECIMAL_GMP
-  mpf_t b;
-  mpf_t c;
-#endif
-
-  rasqal_xsd_decimal_clear_string(result);
-
-#if defined(RASQAL_DECIMAL_C99) || defined(RASQAL_DECIMAL_NONE)
-  result->raw = round(a->raw);
-#endif
-#ifdef RASQAL_DECIMAL_MPFR
-  mpfr_round(result->raw, a->raw);
-#endif
-#ifdef RASQAL_DECIMAL_GMP
-  //////old mpf_round(result->raw, a->raw);
-  /* GMP has no mpf_round so use result := floor(a + 0.5) */
-  mpf_init2(b, a->precision_bits);
-  mpf_init2(c, a->precision_bits);
-
-  mpf_set_d(b, 0.5);
-  mpf_add(c, a->raw, b);
-  mpf_floor(result->raw, c);
-
-  mpf_clear(b);
-  mpf_clear(c);
-
-#endif
-/////////////////////////////////////
 
 ./autogen.sh 
 ./configure  '--enable-query-languages=sparql rdql laqrs'  --libdir=/usr/lib64 
@@ -83,7 +50,10 @@ make check
 make install 
 
 cd..
-#You can import 4store From git or from Tarballs 
+
+#For Ubuntu (Lucid), you have to import 4store From git 
+#For Fedora you can use the last tarball
+
 #import 4store From git 
 git clone https://github.com/garlik/4store.git
 cd 4store

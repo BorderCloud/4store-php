@@ -1,0 +1,395 @@
+<?xml version="1.0"?>
+<!--
+	This build file packages the arc2 files, builds a package.xml (version 2) for installation
+	using PEAR and creates the TAR and TGZ files.
+-->	
+<project name="php4store" basedir="." default="package">
+	
+	<!--
+		==============================================
+		Project properties
+		==============================================
+	-->		
+	<!-- project.basedir -->
+	<property name="project.name" value="php4store"/>
+	<property name="project.lib" value="lib"/>
+	
+	<fileset dir="${project.lib}" id="lib">
+		<include name="php4store/**"/>
+	</fileset>	
+	
+	<fileset dir="." id="doc">
+		<include name="README"/>
+		<include name="INSTALL"/>
+		<include name="examples/**"/>
+	</fileset>
+	
+	<!--
+		==============================================
+		Test properties
+		==============================================
+	-->	
+	<property name="test.dir" value="Tests"/>
+	
+	<!--
+		==============================================
+		Build properties
+		==============================================
+	-->	
+	<property name="build.dir" value="build"/>
+	<property name="build.src.dir" value="${build.dir}/src"/>
+	<property name="build.doc.dir" value="${build.dir}/doc"/>
+	<property name="build.pear.dir" value="${build.dir}/pear"/>
+
+	<!--
+		==============================================
+		Package properties
+		==============================================
+	-->	
+	<property name="pkg.channel" value="bordercloud.github.com/pear"/>
+	<property name="pkg.summary" value="Lib Sparql HTTP Client for 4Store around the native php lib."/>
+	<property name="pkg.description" value="Lib Sparql HTTP Client for 4Store around the native php lib. Documentation: http://bordercloud.github.com/pear/doc"/>
+	<property name="pkg.license" value="MIT"/>
+	<property name="pkg.phpdep" value="5.3.0"/>
+	<property name="pkg.pearinstallerdep" value="1.9.4"/>
+	<property name="pkg.type" value="php"/>
+	<property name="pkg.maintainers.handle" value="karima"/>
+	<property name="pkg.maintainers.name" value="Karima Rafes"/>
+	<property name="pkg.maintainers.email" value="karima.rafes@bordercloud.com"/>	
+	<property name="pkg.maintainers.role" value="lead"/>
+	
+	<property name="pkg.arc2.min" value="1.0.3"/>	
+	
+	
+	<!--
+		==============================================
+		Deploy properties
+		==============================================
+	-->	
+	<property name="pirum.dir" value="../pear"/>
+	<property name="pirum.doc.dir" value="${pirum.dir}/doc"/>
+		
+	
+	<!--
+		==============================================
+		package entry point
+		==============================================	
+	-->				
+	<target name="package"
+		depends="test,clean,build-package,build-doc"/>
+		
+	<!--
+		==============================================
+		test entry point
+		==============================================	
+	-->	
+    <target name="test">
+            <exec  
+                    passthru="true"  
+                    command="phpunit ${test.dir}/AllTests.php" 
+                    checkreturn="true" />
+    </target>
+	
+	
+	<!--
+		==============================================
+		deploy entry point
+		==============================================	
+	-->	
+    <target name="deploy" depends="package" >
+		<echo>-----------------------------</echo>
+		<echo>|          Deploy            |</echo>
+		<echo>-----------------------------</echo>
+
+		<copy file="${pkg.file}" todir="${pirum.dir}"/>	
+		<copy  todir="${pirum.doc.dir}">
+			<fileset dir="${build.doc.dir}">
+				<include name="${pkg.name}/**"/>
+			</fileset>
+		</copy>		
+    	
+    	<echo>Create summary for the docs</echo>
+		 <exec  
+		      passthru="true"  
+    		dir="${pirum.doc.dir}"
+		      command="tree -d -H http://bordercloud.github.com/pear/doc -L 1 -o index.html" 
+       checkreturn="true" />
+    	
+    </target>
+	
+	<!--
+		===================================================================
+		Generate the documentation
+		===================================================================
+	-->	
+	<target name="build-doc" 
+		depends="setproperties" >
+		
+		<copy todir="${build.src.dir}">
+			<fileset refid="doc"/>
+		</copy>	
+		
+		<mkdir dir="${pkg.doc.dir}" />
+	    <phpdoc title="API PHP of 4Store"
+		      destdir="${pkg.doc.dir}"
+		      output="HTML:frames:earthli"
+	    	defaultpackagename="Bourdercloud/PHP4store"
+	    	examplesdir="examples"
+	    	sourcecode="true"
+
+		      >
+				<projdocfileset dir=".">
+			        <include name="README"/>
+			        <include name="INSTALL"/>
+				</projdocfileset>
+	    	<fileset  dir="${build.src.dir}"/>
+	    </phpdoc>
+	  </target>
+	
+	<!--
+		===================================================================
+		Retrieve version number from commandline if not set
+		===================================================================
+	-->
+	<target name="versioncheck" unless="version">
+		<!--read last version -->
+		<loadfile property="lastversion" file="version.txt"/>
+		
+		<echo message="====================================================="/>
+		<echo message="Version not specified. You must enter a version. In"/>
+		<echo message="the future you can add this to build.properties or"/>
+		<echo message="enter it on the command line: "/>
+		<echo message=" "/>
+		<echo message="-Dversion=2.0.0b1"/>
+		<echo message="====================================================="/>	
+		<input propertyname="version_option" defaultValue="BugFix" validargs="Major,Minor,BugFix" promptChar=":"
+			>Please choose the version type increment</input>
+		
+		<version releasetype="${version_option}" file="version.txt" property="version"/>
+
+		<echo message="====================================================="/>
+		<echo message="Type release not specified. You must enter a type. In"/>
+		<echo message="the future you can add this to build.properties or"/>
+		<echo message="enter it on the command line: "/>
+		<echo message=" "/>
+		<echo message="-Drelease=stable"/>
+		<echo message="====================================================="/>	
+		<input propertyname="release" defaultValue="alpha" validargs="stable,beta,alpha" promptChar=":"
+			>Please choose the release option</input>
+	
+	</target>
+	
+	<!--
+		==============================================
+		Sets some default properties
+		==============================================
+	-->
+	<target name="setproperties" depends="versioncheck">
+		<if>
+			<isset property="release"/>
+			<then>		
+				<if>
+					<contains string="${release}" substring="beta"/>
+					<then>
+						<property name="notes">This is the latest beta release of ${project.name}.</property>
+						<property name="state" value="beta"/>
+					</then>
+				
+					<elseif>
+						<contains string="${release}" substring="alpha"/>
+						<then>
+							<property name="notes">This is a snapshot release that might not be functional.</property>
+							<property name="state" value="alpha"/>
+						</then>
+					</elseif>
+		
+					<else>
+						<property name="notes">This is the latest stable release of ${project.name}.</property>
+						<property name="state" value="stable"/>
+					</else>
+				</if>
+					
+			</then>
+			<else>
+				<property name="notes">This is a snapshot release that might not be functional.</property>
+				<property name="state" value="alpha"/>
+			</else>
+		</if>
+		
+		<!--
+			==============================================
+			Package properties
+			==============================================
+		-->	
+		<property name="pkg.apiversion" value="${version}"/>
+		<property name="pkg.apistability" value="${state}"/>
+		<property name="pkg.releaseversion" value="${version}"/>
+		<property name="pkg.releasestability" value="${state}"/>
+		<property name="pkg.relnotes" value="${notes}"/>
+		<property name="pkg.name" value="${project.name}-${version}"/>
+		<property name="pkg.file" value="${build.pear.dir}/${pkg.name}.tgz"/>
+		<property name="pkg.doc.dir" value="${build.doc.dir}/${pkg.name}"/>			
+		<property name="pkg.src.dir" value="${build.pear.dir}/${pkg.name}"/>	
+
+		<property name="pkg.prefix" value="/"/>
+		
+		<echo>Building ${project.name} version ${version}</echo>
+		<echo>Build notes: ${notes} (${state})</echo>
+	
+	</target>
+	
+	<!--
+		==============================================
+		Copy the desired files into the build/ dir
+		making sure to put them in the directory
+		structure that will be needed for PEAR install
+		==============================================
+	-->	
+	<target name="build-src" depends="setproperties,build-dir">
+	
+		<echo>-----------------------------</echo>
+		<echo>| Creating directory layout |</echo>
+		<echo>-----------------------------</echo>
+
+
+
+		<mkdir dir="${build.src.dir}/${project.name}/etc"/>
+		<copy todir="${build.src.dir}">
+			<fileset refid="lib"/>
+		</copy>		
+		<echo append="false" file="${build.src.dir}/${project.name}/etc/VERSION.TXT">${pkg.name}</echo>	
+		
+	</target>
+	
+	<!--
+		==============================================
+		Create a PEAR package.xml which will guide the
+		installation.
+		==============================================
+	-->	
+	<target name="build-package-xml" depends="setproperties,build-src">
+	
+		<echo>-----------------------------</echo>
+		<echo>| Creating PEAR package.xml |</echo>
+		<echo>-----------------------------</echo>
+		<echo></echo>
+		<echo>... (This step may take some time) ... ${pkg.dist.dir}</echo>
+	
+		<pearpkg2 name="${project.name}" dir="${build.src.dir}">
+		   <option name="outputdirectory" value="${build.pear.dir}"/>
+		   <option name="packagefile" value="package.xml"/>
+		   <option name="packagedirectory" value="${build.src.dir}"/>
+		   <option name="baseinstalldir" value="${pkg.prefix}"/>
+		   <option name="channel" value="${pkg.channel}"/>
+		   <option name="summary" value="${pkg.summary}"/>
+		   <option name="description" value="${pkg.description}"/>
+		   <option name="apiversion" value="${pkg.apiversion}"/>
+		   <option name="apistability" value="${pkg.apistability}"/>
+		   <option name="releaseversion" value="${pkg.releaseversion}"/>
+		   <option name="releasestability" value="${pkg.releasestability}"/>
+		   <option name="license" value="${pkg.license}"/>
+		   <option name="phpdep" value="${pkg.phpdep}"/>
+		   <option name="pearinstallerdep" value="${pkg.pearinstallerdep}"/>
+		   <option name="packagetype" value="${pkg.type}"/>
+		   <option name="notes" value="${pkg.relnotes}"/>
+			   <mapping name="deps">
+			    <element>
+					 <element key="name" value="arc2"/>
+			     <element key="min" value="${pkg.arc2.min}"/>
+				 <element key="channel" value="${pkg.channel}"/>
+			    </element>
+			   </mapping>
+			   <mapping name="maintainers">
+			    <element>
+			     <element key="handle" value="${pkg.maintainers.handle}"/>
+			     <element key="name" value="${pkg.maintainers.name}"/>
+			     <element key="email" value="${pkg.maintainers.email}"/>
+			     <element key="role" value="${pkg.maintainers.role}"/>
+			    </element>
+			   </mapping>
+			<fileset dir="${build.src.dir}">
+				<include name="**/**"/>
+			</fileset>
+		</pearpkg2>
+	</target>
+	
+	<!--
+		==============================================
+		Create a tar.gz of the files, which will be 
+		installed by pear package manager.
+		==============================================
+	-->
+	<target name="build-package" depends="build-package-xml">
+
+		<echo>-----------------------------</echo>
+		<echo>| Creating PEAR packages     |</echo>
+		<echo>-----------------------------</echo>	
+		
+		<mkdir dir="${pkg.src.dir}"/>
+
+			<copy todir="${pkg.src.dir}" >
+			  <fileset dir="${build.src.dir}">
+			    <include name="**/**" />
+			    <exclude name="package.xml" />
+			    <exclude name="README" />
+			    <exclude name="INSTALL" />
+			    <exclude name="examples" />
+			    <exclude name="examples/**" />
+			  </fileset>
+			</copy>
+		<delete	file="${pkg.file}"/>
+		<tar compression="gzip" destFile="${pkg.file}"
+		basedir="${build.pear.dir}" />
+	</target>
+
+	<!--
+		==============================================
+		Clean up build files.
+		==============================================
+	-->
+	 <target name="clean">
+
+		<echo>-----------------------------</echo>
+		<echo>| Deleting build directory  |</echo>
+		<echo>-----------------------------</echo>
+	 	
+	 	<delete dir="${build.dir}" />
+    
+	</target>
+	
+	<!--
+		==============================================
+		Clean up build files.
+		==============================================
+	-->
+	 <target name="build-dir" depends="setproperties">
+
+		<echo>-----------------------------</echo>
+		<echo>|  Make build directory      |</echo>
+		<echo>-----------------------------</echo>
+
+	 	<mkdir dir="${build.dir}" />
+	 	<mkdir dir="${build.src.dir}" />
+	 	<mkdir dir="${build.pear.dir}" />
+	 	<mkdir dir="${build.doc.dir}" />    
+	</target>
+    
+	<target name="killall">                
+		<exec  
+		passthru="true"  
+		command="killall 4s-httpd" 
+		checkreturn="true" />
+		<exec  
+		passthru="true"  
+		command="killall 4s-backend" 
+		checkreturn="true" />		
+	</target>  
+	
+    <target name="cleanall" depends="killall">                
+            <exec  
+                    passthru="true"  
+                    command="4s-backend-destroy test" 
+                    checkreturn="true" />
+    </target>
+         
+</project>

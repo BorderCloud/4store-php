@@ -1,8 +1,8 @@
 <?php
 require_once 'PHPUnit/Framework.php';
 
-require_once (dirname(__FILE__) . '/../../lib/4store/Endpoint.php');
-require_once (dirname(__FILE__) . '/../../lib/4store/SparqlTools.php');
+require_once (dirname(__FILE__) . '/../../lib/php4store/Endpoint.php');
+require_once (dirname(__FILE__) . '/../../lib/php4store/SparqlTools.php');
  
 class FourStoreFormatTest extends PHPUnit_Framework_TestCase
 {

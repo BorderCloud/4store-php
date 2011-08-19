@@ -1,38 +1,190 @@
 <?php
-/**
- * @version 0.4.0.0
- * @package Bourdercloud/4store-PHP
+/** 
+ * @version 0.4.1
+ * @package Bourdercloud/PHP4store
  * @copyright (c) 2011 Bourdercloud.com
  * @author Karima Rafes <karima.rafes@bordercloud.com>
-
- Copyright (c) 2011 Bourdercloud.com
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
+ * @license http://www.opensource.org/licenses/mit-license.php
  */
 
-
-require_once(dirname(__FILE__) . '/../arc2/ARC2.php');
+//require_once(dirname(__FILE__) . '/../arc2/ARC2.php');
+/**
+ * bordercloud/arc2 is a lib RDF and Sparql (channel  bordercloud.github.com/pear )
+ */
+require_once('arc2/ARC2.php');
 require_once("Curl.php");
 require_once("Net.php");
 
 /**
- * Sparql HTTP Client for BorderCloud's Endpoint around basic php function.
+ * Sparql HTTP Client for 4store Endpoint around basic php function.
+ * 
+ * 
+ * You can send a query to any endpoint sparql 
+ * and read the result in an array.
+ * 
+ * Example : send a simple query to DBpedia
+ * <code>
+ * <?php  
+ *  require_once('php4store/Endpoint.php');
+ *  
+ * 	$endpoint ="http://dbpedia.org/";
+ * 	$sp_readonly = new Endpoint($endpoint);
+ *  $q = "select *  where {?x ?y ?z.} LIMIT 5";
+ *  $rows = $sp_readonly->query($q, 'rows');
+ *  $err = $sp_readonly->getErrors();
+ *  if ($err) {
+ * 	  print_r($err);
+ * 	  throw new Exception(print_r($err,true));
+ * 	}
+ * 	var_dump($rows);
+ * ?>
+ * </code>
+ * 
+ * 
+ *  With a query ASK, you can use the parameter 'raw' 
+ *  in the function query and read directly the result true or false.
+ * 
+ * Example : send a query ASK with the parameter raw
+ * <code>
+ * <?php
+ *  require_once('php4store/Endpoint.php');
+ *  
+ *    $q = "PREFIX a: <http://example.com/test/a/>
+ *			PREFIX b: <http://example.com/test/b/> 
+ *			ask where { GRAPH <".$graph."> {a:A b:Name \"Test3\" .}} ";
+ *    $res = $sp_readonly->query($q, 'raw');
+ *    $err = $sp_readonly->getErrors();
+ *    if ($err) {
+ *	    print_r($err);
+ *	    throw new Exception(print_r($err,true));
+ *	}
+ *	var_dump($res);
+ * ?>
+ * </code>
+ * 
+ * 
+ * You can insert data also with SPARQL and the function query. 
+ * If the graph doesn't exist, 4store will create the graph.
+ * 
+ * Example : send a query Insert
+ * <code>
+ * <?php
+ *  require_once('php4store/Endpoint.php');
+ *  
+ * $graph = "http://www.bordercloud.com";	
+ * $endpoint ="http://localhost:8080/sparql/";
+ * 
+ * 	//put argument false to write
+ * 	$readonly = false;
+ * 	$sp_write = new Endpoint('http://localhost:8080/',$readonly);
+ * 	
+ * 	$q = " 
+ * 			PREFIX a: <http://example.com/test/a/>
+ * 			PREFIX b: <http://example.com/test/b/> 
+ * 			INSERT DATA {  
+ * 				GRAPH <".$graph."> {    
+ * 				a:A b:Name \"Test1\" .   
+ * 				a:A b:Name \"Test2\" .   
+ * 				a:A b:Name \"Test3\" .  
+ *     		}}";
+ * 	$res = $sp_write->query($q,'raw');
+ * 	$err = $sp_write->getErrors();
+ *  if ($err) {
+ * 	    print_r($err);
+ * 	    throw new Exception(print_r($err,true));
+ * 	}
+ * 	var_dump($res);
+ * ?>
+ * </code>
+ * 	
+ * 
+ * You can delete data also with SPARQL and the function query.
+ * 
+ * Example : send a query Delete
+ * <code>
+ * <?php
+ *  require_once('php4store/Endpoint.php');
+ *  
+ * $graph = "http://www.bordercloud.com";	
+ * $endpoint ="http://localhost:8080/sparql/";
+ * 	
+ * 	$q = " 
+ * 			PREFIX a: <http://example.com/test/a/>
+ * 			PREFIX b: <http://example.com/test/b/> 
+ * 			DELETE DATA {  
+ * 				GRAPH <".$graph."> {     
+ * 				a:A b:Name \"Test2\" . 
+ *     		}}";
+ * 	
+ * 	$res = $sp_write->query($q,'raw');
+ * 	$err = $sp_write->getErrors();
+ *  if ($err) {
+ * 	    print_r($err);
+ * 	    throw new Exception(print_r($err,true));
+ * 	}
+ * 	var_dump($res);
+ * ?>
+ * </code>
+ * 
+ * 
+ * You can create or replace a graph with the function set.
+ * 
+ * Example : 
+ * <code>
+ * <?php
+ *  require_once('php4store/Endpoint.php');
+ *  
+ * $readonly = false;
+ * $s = new Endpoint('http://localhost:8080/',$readonly);
+ * 
+ * $r = $s->set('http://example/test', "
+ * 	@ prefix foaf: <http://xmlns.com/foaf/0.1/> .
+ * 	<http://github.com/bordercloud/4store-php> foaf:maker <http://www.bordercloud.com/wiki/user:Karima_Rafes> . ");
+ * 
+ * ?>
+ * </code>
+ * 
+ * 
+ * You can add data (Turtle format) in a graph with the function add.
+ * 
+ * Example : 
+ * <code>
+ * <?php
+ *  require_once('php4store/Endpoint.php');
+ *  
+ * $readonly = false;
+ * $s = new Endpoint('http://localhost:8080/',$readonly);
+ * $r = $s->add('http://example/test', "
+ * 	@ prefix foaf: <http://xmlns.com/foaf/0.1/> .
+ * 	<http://www.bordercloud.com/wiki/user:Karima_Rafes>  foaf:workplaceHomepage <http://www.bordercloud.com> . ");
+ * var_dump($r);
+ * 
+ * ?>
+ * </code>
+ * 
+ *  
+ * You can delete a graph with the function delete.
+ * 
+ * Example : 
+ * <code>
+ * <?php
+ *  require_once('php4store/Endpoint.php');
+ *  
+ * $readonly = false;
+ * $s = new Endpoint('http://localhost:8080/',$readonly);
+ *  
+ *   $r = $s->delete('http://example/test');
+ *   var_dump($r);
+ * ?>
+ * </code>
+ * 
+ * @example examples/1_set.php  Example Set
+ * @example examples/2_add.php  Example Add
+ * @example examples/3_delete.php  Example Delete
+ * @example examples/4_query.php  Example Query
+ * @example examples/5_queryDBpedia.php  Example Query with DBpedia
+ * @example examples/init4Store.php  Example Start and Stop 4Store
+ * @package Bourdercloud/PHP4store
  */
 class Endpoint {
 	/**
@@ -78,7 +230,10 @@ class Endpoint {
 	/**
 	 * Constructor of Graph
 	 * @param string $endpoint : url of endpoint, example : http://lod.bordercloud.com/sparql
+	 * @param boolean $readOnly : true by default, if you allow the function query to write in the database
 	 * @param boolean $debug : false by default, set debug to true in order to get usefull output
+	 * @param string $proxy_host : null by default, IP of your proxy
+	 * @param string $proxy_port : null by default, port of your proxy
 	 * @access public
 	 */
 	public function __construct($endpoint,
@@ -212,12 +367,16 @@ class Endpoint {
 		}
 	}
 	
-	/* @param string $query : Query Sparql
-	 * @param $q Query SPARQL 
-	 * @param  $result_format Optional, 
-	 * rows to return array of results or 
-	 * row to return array of first result or 
-	 * raw to return boolean for request ask, insert and delete
+	/**
+	 * This function parse a SPARQL query, send the query and parse the SPARQL result in a array. 
+	 * You can custom the result with the parameter $result_format : 
+	 * <ul>
+	 * <li>rows to return array of results
+	 * <li>row to return array of first result
+	 * <li>raw to return boolean for request ask, insert and delete
+	 * </ul>
+	 * @param string $q : Query SPARQL 
+	 * @param string $result_format : Optional,  rows, row or raw
 	 * @return array|boolean in function of parameter $result_format
 	 * @access public
 	 */
@@ -259,7 +418,7 @@ class Endpoint {
 		return $r;
 	}
 		
-	/*
+	/**
 	 * Give the errors 
 	 * @return array
 	 * @access public
@@ -294,9 +453,10 @@ class Endpoint {
 	 * Send a request SPARQL of type select or ask to endpoint directly and output the response
 	 * of server. If you want parse the result of this function, it's better and simpler
 	 * to use the function query().
+	 * 
+	 * if you want use another format, you can use directly the function queryReadJSON and queryReadTabSeparated
 	 * @param string $query : Query Sparql
-	 * @param string $typeOutput by default "application/sparql-results+xml"
-	 *  if you want use another format, you can use directly the function queryReadJSON and queryReadTabSeparated
+	 * @param string $typeOutput by default "application/sparql-results+xml",
 	 * @return string response of server or false if error (to do getErrors())
 	 * @access public
 	 */
@@ -350,8 +510,10 @@ class Endpoint {
 	 * Send a request SPARQL of type insert data or delete data to endpoint directly.
 	 * If you want check the query before to send, it's better to use the function query()
 	 *  in the class StorePlus.
-	 *  Example insert : PREFIX ex: <http://example.com/> INSERT DATA { GRAPH <http://mygraph> { ex:a ex:p 12 .}}
-	 *  Example delete : PREFIX ex: <http://example.com/> DELETE DATA { GRAPH <http://mygraph> { ex:a ex:p 12 .}}
+	 * <ul>
+	 * <li>Example insert : PREFIX ex: <http://example.com/> INSERT DATA { GRAPH <http://mygraph> { ex:a ex:p 12 .}}
+	 * <li>Example delete : PREFIX ex: <http://example.com/> DELETE DATA { GRAPH <http://mygraph> { ex:a ex:p 12 .}}
+	 * </ul>
 	 * @param string $query : Query Sparql of type insert data or delete data only
 	 * @return boolean true if it did or false if error (to do getErrors())
 	 * @access public
@@ -383,7 +545,7 @@ class Endpoint {
 	/************************************************************************/
 	//PRIVATE Function
 	
-	/*
+	/**
 	 * Execute the query 
 	 * @access private
 	 */
@@ -497,6 +659,11 @@ class Endpoint {
 		}
 	}
 	
+	/**
+	 * Init an object Curl in function of proxy.
+	 * @return an object of type Curl
+	 * @access private
+	 */
 	private function initCurl(){
 		$objCurl = new Curl();
 		if($this->_proxy_host != null && $this->_proxy_port != null){
