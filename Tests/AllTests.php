@@ -1,5 +1,6 @@
 <?php
-require_once 'PHPUnit/Framework.php';
+require_once 'PHPUnit/Autoload.php';
+//require_once 'PHPUnit/Framework.php';
 
 require_once 'FourStore/FourStore_TestsOnLine.php';
 require_once 'FourStore/FourStore_TestsOffLine.php';
@@ -11,7 +12,7 @@ $NameBackend = "test";
 $SetupEndPoint = true;
 $CleanEndPoint = true;
 $modeDebug = false;
-$modeSkipProblem = true;
+$modeSkipProblem = false;
 
 //Global Vars (private)
 $prefixSparql = "PREFIX a: <http://example.com/test/a/>

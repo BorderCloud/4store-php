@@ -1,5 +1,6 @@
 <?php
-require_once 'PHPUnit/Framework.php';
+require_once 'PHPUnit/Autoload.php';
+//require_once 'PHPUnit/Framework.php';
  
 require_once 'FourStoreToolsTest.php';
 require_once 'FourStoreDataTest.php';
