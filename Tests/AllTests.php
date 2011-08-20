@@ -12,7 +12,7 @@ $NameBackend = "test";
 $SetupEndPoint = true;
 $CleanEndPoint = true;
 $modeDebug = false;
-$modeSkipProblem = false;
+$modeSkipProblem = true;
 
 //Global Vars (private)
 $prefixSparql = "PREFIX a: <http://example.com/test/a/>

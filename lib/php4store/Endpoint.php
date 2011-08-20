@@ -438,12 +438,11 @@ class Endpoint {
 		$count = 0;
 		if($graph != null){
 			//FIXME count(*) doesn't work
-			$r = $this->queryReadTabSeparated("SELECT (count(?a) AS ?count) WHERE  { GRAPH <".$graph."> {?a ?b ?c}}");
+			$r = $this->queryRead("SELECT (count(?a) AS ?count) WHERE  { GRAPH <".$graph."> {?a ?b ?c}}");
 		}else{
-			$r = $this->queryReadTabSeparated("SELECT (count(?a) AS ?count) WHERE {?a ?b ?c}");
+			$r = $this->queryRead("SELECT (count(?a) AS ?count) WHERE {?a ?b ?c}");
 		}
-
-		if(preg_match_all('%\?count\n"([0-9]+)"\^\^<http://www.w3.org/2001/XMLSchema#integer>%m',$r,$countResponse))
+		if(preg_match_all('%<binding name="count"><literal[^>]*>([0-9]+)<%m',$r,$countResponse))
 			$count = $countResponse[1][0];
 
 		return $count;
