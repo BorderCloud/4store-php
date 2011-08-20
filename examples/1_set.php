@@ -15,7 +15,7 @@ require 'init4Store.php';
 require '../lib/php4store/Endpoint.php';
 
 //remove this line in your code
-//start4store();
+start4store();
 
 $readonly = false;
 $s = new Endpoint('http://localhost:8080/',$readonly); 
@@ -25,5 +25,7 @@ $r = $s->set('http://example/test', "
 ");
 var_dump($r);
 
+echo "test " . $s->count();
+
 //remove this line in your code
-//stop4store();
+stop4store();

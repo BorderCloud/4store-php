@@ -16,7 +16,7 @@ require 'init4Store.php';
 require '../lib/php4store/Endpoint.php';
 
 //remove this line in your code
-//start4store();
+start4store();
 
 	$graph = "http://www.bordercloud.com";	
 	$endpoint ="http://localhost:8080/sparql/";
@@ -91,4 +91,4 @@ require '../lib/php4store/Endpoint.php';
 	var_dump($res);
 
 //remove this line in your code
-//stop4store();
+stop4store();
